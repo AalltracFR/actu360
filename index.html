@@ -1,0 +1,943 @@
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actu360 - Toute l'actualité à 360° par IA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            font-weight: 400;
+            line-height: 1.6;
+            color: #111827;
+            background-color: #ffffff;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        header {
+            background: #ffffff;
+            border-bottom: 1px solid #f3f4f6;
+            padding: 2rem 0;
+            position: relative;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Inter', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #111827;
+            letter-spacing: -0.025em;
+        }
+
+        .tagline {
+            font-size: 0.875rem;
+            color: #6b7280;
+            font-weight: 400;
+            margin-top: 0.25rem;
+            letter-spacing: 0.025em;
+        }
+
+        nav {
+            background: rgba(255, 255, 255, 0.95);
+            border-bottom: 1px solid #f3f4f6;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: center;
+        }
+
+        .nav-tabs {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-tab {
+            padding: 1.25rem 2rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
+            color: #6b7280;
+            font-size: 0.875rem;
+            position: relative;
+            text-decoration: none;
+        }
+
+        .nav-tab:hover {
+            color: #111827;
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+
+        .nav-tab.active {
+            color: #111827;
+            border-bottom-color: #111827;
+            font-weight: 600;
+        }
+
+        main {
+            padding: 4rem 0;
+            min-height: 60vh;
+        }
+
+        .section {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .section.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .section-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            text-align: center;
+            color: #111827;
+            letter-spacing: -0.025em;
+            line-height: 1.1;
+        }
+
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .article-card {
+            background: #ffffff;
+            border: 1px solid #f3f4f6;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .article-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            border-color: #e5e7eb;
+        }
+
+        .article-image {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            background-color: #f9fafb;
+        }
+
+        .article-content {
+            padding: 2rem;
+        }
+
+        .article-date {
+            color: #9ca3af;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .article-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #111827;
+            line-height: 1.4;
+            letter-spacing: -0.01em;
+        }
+
+        .article-excerpt {
+            color: #6b7280;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            font-weight: 400;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .modal-content {
+            background: #ffffff;
+            max-width: 750px;
+            margin: 0 auto;
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            position: relative;
+        }
+
+        .modal-image {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: rgba(255, 255, 255, 0.95);
+            color: #111827;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            font-weight: 500;
+        }
+
+        .modal-close:hover {
+            background: #ffffff;
+            transform: scale(1.05);
+        }
+
+        .modal-body {
+            padding: 2.5rem;
+        }
+
+        .modal-date {
+            color: #9ca3af;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .modal-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            color: #111827;
+            letter-spacing: -0.025em;
+            line-height: 1.2;
+        }
+
+        .modal-text {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #374151;
+        }
+
+        .modal-text strong {
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .modal-text em {
+            font-style: italic;
+        }
+
+        .modal-text h1, .modal-text h2, .modal-text h3 {
+            font-family: 'Inter', sans-serif;
+            margin: 2rem 0 1rem 0;
+            color: #111827;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        .modal-text h1 { font-size: 1.75rem; }
+        .modal-text h2 { font-size: 1.5rem; }
+        .modal-text h3 { font-size: 1.25rem; }
+
+        .modal-text p {
+            margin-bottom: 1.25rem;
+        }
+
+        .modal-text ul, .modal-text ol {
+            margin: 1.5rem 0;
+            padding-left: 1.5rem;
+        }
+
+        .modal-text li {
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-text blockquote {
+            border-left: 3px solid #111827;
+            padding-left: 1.5rem;
+            margin: 2rem 0;
+            font-style: italic;
+            color: #6b7280;
+            background-color: #f9fafb;
+            padding: 1.5rem 1.5rem 1.5rem 2rem;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 4rem 0;
+            color: #9ca3af;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .loading::after {
+            content: "";
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #f3f4f6;
+            border-top: 2px solid #111827;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 8px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 0;
+            color: #9ca3af;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 0.75rem;
+            color: #6b7280;
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+
+        .empty-state p {
+            font-size: 0.875rem;
+            font-weight: 400;
+        }
+
+        footer {
+            background: #f9fafb;
+            border-top: 1px solid #f3f4f6;
+            color: #6b7280;
+            text-align: center;
+            padding: 3rem 0;
+            margin-top: 5rem;
+            font-size: 0.875rem;
+            font-weight: 400;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 20px;
+            }
+
+            header {
+                padding: 1.5rem 0;
+            }
+
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 0.5rem;
+            }
+
+            .logo {
+                font-size: 1.75rem;
+            }
+
+            .nav-tabs {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .nav-tab {
+                padding: 1rem 1.5rem;
+                font-size: 0.8125rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+                margin-bottom: 2rem;
+            }
+
+            .articles-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .modal {
+                padding: 1rem;
+            }
+
+            .modal-content {
+                border-radius: 12px;
+            }
+
+            .modal-body {
+                padding: 2rem;
+            }
+
+            .modal-title {
+                font-size: 1.75rem;
+            }
+
+            main {
+                padding: 3rem 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 16px;
+            }
+
+            .modal {
+                padding: 0.5rem;
+            }
+
+            .modal-body {
+                padding: 1.5rem;
+            }
+
+            .article-content {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div>
+                    <div class="logo">Actu360</div>
+                    <div class="tagline">Toute l'actualité à 360° par IA</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <nav>
+        <div class="container">
+            <div class="nav-container">
+                <ul class="nav-tabs">
+                    <li class="nav-tab active" data-section="france">🇫🇷 France</li>
+                    <li class="nav-tab" data-section="europe">🇪🇺 Europe</li>
+                    <li class="nav-tab" data-section="monde">🌍 Monde</li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="container">
+            <section id="france" class="section active">
+                <h2 class="section-title">Actualités France</h2>
+                <div class="loading" id="loading-france">Chargement des actualités...</div>
+                <div class="articles-grid" id="articles-france"></div>
+            </section>
+
+            <section id="europe" class="section">
+                <h2 class="section-title">Actualités Europe</h2>
+                <div class="loading" id="loading-europe">Chargement des actualités...</div>
+                <div class="articles-grid" id="articles-europe"></div>
+            </section>
+
+            <section id="monde" class="section">
+                <h2 class="section-title">Actualités Monde</h2>
+                <div class="loading" id="loading-monde">Chargement des actualités...</div>
+                <div class="articles-grid" id="articles-monde"></div>
+            </section>
+        </div>
+    </main>
+
+    <div class="modal" id="articleModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <img class="modal-image" id="modalImage" alt="">
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-date" id="modalDate"></div>
+                <h1 class="modal-title" id="modalTitle"></h1>
+                <div class="modal-text" id="modalText"></div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Actu360. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <script>
+        let articlesData = {
+            france: [],
+            europe: [],
+            monde: []
+        };
+
+        const sampleArticles = {
+            france: [
+                {
+                    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Chaparral_Supercell_2.JPG/1200px-Chaparral_Supercell_2.JPG",
+                    date: "2025-06-27",
+                    title: "Orages d’exception à Paris : supercellules déchaînées, grêle géante et bilan tragique",
+                    content: "Mercredi 25 juin 2025, Paris et une grande partie du territoire français ont été frappés par des orages ultra-violents, engendrant des supercellules qui ont laissé derrière elles des scènes impressionnantes et un bilan humain dramatique.\n\n### 🔹 Des phénomènes hors normes\n\n* Des **grêlons atteignant 6 à 8 cm** de diamètre ont déferlé au sud-ouest de la France avant de toucher la région parisienne, brisant toits et vitrages.\n* Les **rafales** ont carrément frôlé les **140 km/h**, mesurées notamment à Bailleul‑le‑Soc et Montbeugny dans l’Oise et l’Allier.\nCes phénomènes se sont produits dans le cadre de **supercellules**, des orages particulièrement intenses, associés à des fortes rafales, une activité électrique soutenue et une grêle massive.\n\n### 🔹 Impact sur Paris et Île‑de‑France\n\n* Pluies torrentielles et chutes d’arbres ont causé d’importantes **inondations**, rendant plusieurs quais impraticables et provoquant la fermeture temporaire de stations de métro et de lignes RER.\n* À Paris comme dans sa banlieue, les pompiers ont dû intervenir pour dégager des dizaines d’arbres, tandis que des fuites ont touché des bâtiments symboliques, dont l’**Assemblée nationale** et l’aéroport de **Roissy-CDG** .\n\n### 🔹 Coupures d’électricité et interventions\n\n* Environ **110 000 foyers** ont été privés d’électricité (jusqu’à 120 000 selon certains bilans).\n* Les pompiers ont réalisé **plus de 2 500 interventions** à travers la France, notamment pour des toitures, des lignes électriques et des arbres déracinés.\n\n### 🔹 Le bilan humain\n\n* Deux personnes ont perdu la vie en lien direct avec ces intempéries : un homme en Mayenne, victime d’un accident de quad causé par la chute d’un arbre, ainsi qu’un **enfant de 12 ans**, fauché par un arbre arraché par la tempête dans le Tarn‑et‑Garonne.\n* Une figure encore plus lourde qu’un simple choc météo, car ces événements s’inscrivent dans une **vague de chaleur précoce**, avec des températures supérieures à **40 °C**, accentuant l’instabilité atmosphérique.\n\n---\n\n[Violents orages à Paris : dégâts et inondations…](https://www.youtube.com/watch?v=qsjUw3ee-TE&utm_source=chatgpt.com)\n\n---\n\n### 🌩️ Analyse et perspectives\n\nCet épisode frappe par son intensité : des phénomènes associant chaleur extrême et orages supercellulaires sont de plus en plus fréquents dans un contexte climatique tendu. Météo‑France et la sécurité civile ont souligné le caractère exceptionnel de ces rafales (jusqu’à **140 km/h**), d’une grêle dévastatrice et d’une activité électrique inhabituelle pour un mois de juin.\n\nÀ court terme, les dégâts matériels (infrastructures, toitures, lignes) devront être pris en charge, tandis que des renforcement des alertes et des moyens de prévention sont notamment attendus pour mieux anticiper ces événements. Sur le plan humain, le drame de ces deux décès appelle à une vigilance accrue dans les situations d’alerte orage.\n\n---\n\n### 💡 Conseils en cas d’épisode similaire\n\n* Évitez de circuler sous les arbres durant des rafales ou des orages.\n* Mettez-vous à l’abri en cas de grêle violente : l’impact de grêlons de 8 cm peut être mortel.\n* Anticipez : en période de chaleur intense, restez attentifs aux bulletins météo et aux alertes Météo‑France.\n\n---\n\nUn épisode alarmant, qui rappelle la puissance destructrice de la météo extrême et la nécessité d’une prévention renforcée pour protéger les populations."
+                },
+                {
+                    image: "https://reporterre.net/IMG/jpg/infog30_juin_2025.jpg",
+                    date: "2025-06-27",
+                    title: "Nouvelle flambée de chaleur ce week-end : plus de 14 départements placés en vigilance orange canicule",
+                    content: "Une nouvelle vague de chaleur s’annonce dès ce samedi, avec une hausse marquée des températures et l’activation de l’alerte **vigilance orange canicule** dans plus de 14 départements, principalement dans le sud-ouest et le centre-est de la France.\n\n### 🌡️ Ce que prévoit Météo‑France\n\nAprès une accalmie liée à des orages en milieu de semaine, la chaleur revient en force. Météo‑France annonce des températures pouvant atteindre **38–40 °C** dans certaines régions, notamment en Auvergne‑Rhône‑Alpes, le Sud‑Ouest et le Centre‑Val‑de‑Loire.\n\n### 🔥 Départements concernés\n\nÀ ce jour, plus de **14 départements** sont en alerte orange canicule, avec des seuils dépassés **jour et nuit**, selon les critères fixés par Météo‑France. Ce classement implique un risque sanitaire non négligeable, notamment pour les personnes fragiles.\n\n### 🧭 Causes et impacts attendus\n\nCe nouvel épisode est alimenté par un **anticyclone d’origine ibérique**, qui amplifie la remontée d’air chaud sur le territoire. Un contexte similaire à celui observé lors de la première vague contemporaine à la mi‑juin, où des records approchant les **41 °C** avaient déjà été relevés dans les Pyrénées‑Orientales.\n\n### 🛡️ Conseils aux citoyens\n\nPour se prémunir des effets de la canicule, il convient de :\n\n* S’hydrater **régulièrement**, même sans ressentir la soif ;\n* Éviter l’exposition au soleil entre **11 h et 16 h** ;\n* Rafraîchir son logement, notamment en fermant volets et stores en journée et en ouvrant la nuit ;\n* Privilégier les lieux climatisés ou espaces ombragés ;\n* Surveiller les populations vulnérables (personnes âgées, enfants, personnes malades).\n### 🎯 Et après ?\n\nUn rafraîchissement est attendu dès **dimanche soir**, sous l’effet d’une possible perturbation orageuse similaire à celle observée mercredi. Toutefois, cette accalmie sera de courte durée : une nouvelle hausse des températures est prévue dès lundi, prolongeant l’épisode caniculaire en début de semaine prochaine.\n\n---\n\nCette nouvelle vigilance rappelle une année 2025 particulièrement précoce et marquée par des canicules fréquentes. Restez informés et suivez les alertes en temps réel sur les portails officiels (Météo‑France, Préfectures, Santé Départementale)."
+                },
+                {
+                    image: "https://d3fy651gv2fhd3.cloudfront.net/charts/france-inflation-cpi.png?h=400&ismobile=1&lbl=0&s=frcpiyoy&v=202506270659V20230410&w=640",
+                    date: "2025-06-27",
+                    title: "Inflation en hausse en juin : l’indice des prix à la consommation dépasse les attentes",
+                    content: "**Paris, 27 juin 2025** – En juin, l’inflation en France a connu un rebond inattendu, marquant +0,9 % sur un an selon l’Insee, après +0,7 % en mai . Ce chiffre dépasse les prévisions des analystes (0,7 % en moyenne) et met fin à la tendance baissière observée depuis le début de l’année .\n\n### 📌 Principaux enseignements :\n\n* **Secteur des services** : c’est le principal facteur d’accélération. Les prix des services ont grimpé de 2,4 % sur un an en juin, contre 2,1 % en mai, tirés par l’hébergement, la santé et les transports.\n* **Énergie** : le recul des prix ralentit : –6,9 % vs –8,0 % en mai.\n* **Alimentation** : légère hausse à +1,4 %, en progression après +1,3 % en mai.\n* **Biens manufacturés** : toujours en léger recul à –0,2 % sur un an.\n* **Tabac** : inflation stable autour de 4 %.\nSur un mois, l’inflation a été de +0,3 %, après –0,1 % en mai, stimulée par la reprise des prix des services et du pétrole.\n\n### 🔎 Contexte et perspectives\n\n* Le taux d’inflation selon l’indice harmonisé de l’UE atteint 0,8 % en glissement annuel, contre 0,6 % en mai.\n* Bien que la hausse soit inattendue, elle reste faible et place la France parmi les pays les moins inflationnistes de la zone euro.\n* La Banque centrale européenne (BCE) a abaissé ses taux plus tôt ce mois-ci, jugeant l’inflation globalement maîtrisée (objectif < 2 %) . Villeroy de Galhau (BdF) anticipe « d’éventuelles nouvelles baisses » si la dynamique se poursuit.\n\n### 🧭 Implications pour les ménages et la politique monétaire\n\n* **Ménages** : l’accélération du prix des services (transports, santé, hébergement) affecte directement le budget quotidien, en particulier pour les dépenses discrétionnaires.\n* **Banque de France / BCE** : le léger rebond de l’inflation pourrait conduire à un réexamen prudent de la politique monétaire, bien que la BCE garde une posture accommodante.\n* **Tensions persistantes** : la baisse moins marquée de l’énergie et la résilience de l’alimentation signent un climat inflationniste toujours sous-jacent.\n\n---\n\n## 🧾 En résumé\n\n| Indicateur   | Juin (YoY) | Mai (YoY) | Variation |\n| ------------ | ---------- | --------- | --------- |\n| IPC (Insee)  | +0,9 %     | +0,7 %    | +0,2 pt   |\n| Services     | +2,4 %     | +2,1 %    | +0,3 pt   |\n| Énergie      | –6,9 %     | –8,0 %    | +1,1 pt   |\n| Alimentation | +1,4 %     | +1,3 %    | +0,1 pt   |\n| Manufacturés | –0,2 %     | –0,2 %    | stable    |\n\nL’indice de juin dépasse les attentes, porté par les services et un ralentissement du recul de l’énergie.\n\n---\n\n### 📌 A retenir :\n\nL’inflation repart légèrement en juin à 0,9 %, sous l’effet d’un rebond dans les services et la stabilisation de l’énergie, un signal à surveiller pour les décideurs monétaires et les consommateurs."
+                },
+                {
+                    image: "https://www.army-technology.com/wp-content/uploads/sites/3/2024/11/Frances-defence-expenditure_01.11.24.jpg",
+                    date: "2025-06-27",
+                    title: "Pression budgétaire grandissante : la dette et le déficit mis à rude épreuve par le réarmement français",
+                    content: "La France est aujourd’hui confrontée à une double pression : d’un côté, elle doit respecter ses engagements européens en matière de réduction des déficits et de maîtrise de la dette, et de l’autre, elle est appelée à accélérer son effort de réarmement en réponse à la montée des tensions géopolitiques.\n\n---\n\n#### 📉 1. **Des finances publiques déjà sous tension**\n\n* Le déficit public prévu pour 2025 s’établit autour de 5,4 % du PIB, soit bien au-dessus du seuil controversé des 3 % fixé par les traités européens.\n* Le ratio dette/PIB avoisine 113 % en 2024, et pourrait grimper jusqu’à 118 % en 2027, plaçant la France parmi les pays les plus endettés de l’Union.\n* La charge de la dette pèse lourd : environ 55 milliards d’euros de service de dette en 2024–2025, soit près de 60 % des recettes fiscales issues de l’impôt sur le revenu.\n\n---\n\n#### 🛡️ 2. **Un réarmement accéléré… à quel coût ?**\n\n* En 2024, la France a porté ses dépenses militaires à près de **57 milliards d’euros**, une hausse de 6,1 % par rapport à l’année précédente, dans la continuité de la loi de programmation militaire (LPM) 2024–2030.\n* Selon France Stratégie, pour passer de 2 % à 3,5 % (voire 5 %) du PIB d’ici 2030, les dépenses de défense courantes devraient atteindre environ **120 milliards d’euros**, doublant quasiment l’effort actuel.\n* L’Union européenne elle-même envisage une montée en puissance majeure, via l’initiative dite **ReArm Europe** (rebaptisée *Readiness 2030*), qui mobilise potentiellement **800 milliards d’euros** dans l’UE, dont une part française significative.\n\n---\n\n#### ⚠️ 3. **Les équations budgétaires se compliquent**\n\n* Pour financer ce double effort (déficit à réduire + armée à renforcer), le gouvernement se retrouve face à trois leviers complexes : **réductions drastiques dans d’autres postes budgétaires**, **hausse des impôts** (déjà en partie votée dans la LFI 2025) et **endettement renforcé**.\n* La pression sur les prélèvements est tangible : près de la moitié de l’effort prévu en 2025 repose sur des hausses d’impôts temporaires, repoussant les efforts structurels aux années suivantes.\n* Avec une croissance fragile (estimée à seulement 0,7 % en 2025, contre 0,9 % initialement) et des tensions géopolitiques qui pèsent sur les exportations, les recettes fiscales risquent de décevoir .\n\n---\n\n#### 🧩 4. **Des stratégies à inventer pour concilier défense et soutenabilité**\n\n* Plusieurs scénarios sont évoqués :\n\n  * **Couper dans les dépenses sociales ou l’emploi public** ;\n  * **Augmenter significativement les impôts** ;\n  * **Mutualiser l’effort à l’échelle européenne**, via la dette commune, pour alléger la charge nationale.\n* Une analyse de la Cour des comptes et du Cepremap propose des ajustements progressifs (sur 4 à 7 ans) pour éviter un choc brutal sur la croissance et l’emploi.\n\n---\n\n#### 🔍 En résumé\n\n1. **Déficit élevé** (≈ 5 % du PIB) et **dette autour de 113 %** du PIB pèsent lourd sur les finances françaises.\n2. **Hausse significative du budget militaire**, avec un doublement potentiel pour atteindre 3,5–5 % du PIB d’ici 2030, en lien avec l’initiative européenne *Readiness 2030*.\n3. **Tensions budgétaires fortes**, entre croissance faible, pression fiscalo-redistributive, et engagements internationaux.\n4. **Nécessité de compromis** audacieux : arbitrage entre coupes, impôts, endettement ou partage européen.\n\n---\n\n### ⚖️ Vers un choix stratégique clé\n\nLa France est à un tournant. Accélérer son effort militaire pour affronter les nouveaux défis sécuritaires sans fragiliser son économie implique des choix difficiles : sacrifier des postes budgétaires, financer par l’impôt, ou repenser la solidarité européenne. Le gouvernement, le Parlement et les partenaires européens devront tous contribuer à définir un nouveau compromis, un équilibre délicat : garantir la souveraineté tout en préservant la stabilité financière nationale et continentale."
+                },
+                {
+                    image: "https://c8.alamy.com/comp/GD71XJ/britain-immigration-refugee-crisis-concept-as-people-on-a-border-wall-GD71XJ.jpg",
+                    date: "2025-06-27",
+                    title: "AU CŒUR DE LA TEMPÊTE MIGRATOIRE : Illégitime accord bilatéral entre la France et le Royaume-Uni dénoncé par l’Italie, l’Espagne, la Grèce, Malte et Chypre",
+                    content: "Les gouvernements de cinq États membres de l’Union européenne – l’Italie, l’Espagne, la Grèce, Malte et Chypre – ont publié cette semaine une mise en garde formelle, pointant du doigt un projet d’accord bilatéral envisagé entre la France et le Royaume-Uni. Ce texte, qualifié de « surprenant » et « inquiétant », vise à mettre en place un dispositif de réinstallation des migrants débarquant au Royaume-Uni, en les renvoyant vers la France sans recourir à un cadre européen commun.\n\n### ▶️ Contenu de l’accord bilatéral\n\n* Sur le modèle dit one-in, one-out, le Royaume-Uni expulserait les migrants irréguliers vers la France, en échange de l’accueil, par Londres, de demandeurs d’asile traités en France pour des motifs humanitaires ou familiaux.\n* Ce schéma rappelle la logique de l’accord UE–Turquie de 2016, qui visait à limiter les traversées vers la Grèce moyennant une relocalisation en échange .\n\n### 🚨 Les inquiétudes du groupe MED‑5\n\n* Pour ces États méditerranéens, premiers points d’arrivée des migrants en Europe, cet accord pose un problème de procédure – en contournant l’Union – et de principes : les retours orchestrés par Paris pourraient les obliger à reprendre les migrants renvoyés depuis le Royaume‑Uni, selon le règlement Dublin actuel.\n* Une crainte majeure : ce mécanisme pourrait aggraver les déséquilibres migratoires déjà lourds dans ces pays.\n* Dans une lettre à la Commission européenne, ils exigent des clarifications sur l’impact de cet accord pour les autres États membres .\n\n### ⚖️ Réponse de Bruxelles et contexte plus large\n\n* La Commission européenne déclare avoir reçu le courrier et s’est engagée à dialoguer avec Paris et Londres afin de garantir le respect du droit européen.\n* Elle rappelle que toute solution sur la migration devrait idéalement s’intégrer dans le processus de reset France‑Royaume‑Uni, visant à encadrer les flux sans déstabiliser l’UE.\n* Pour le Royaume‑Uni, cette initiative bilatérale s’inscrit dans une démarche de résultats rapides, face à la montée des traversées clandestines (38 000 passages recensés l’an dernier).\n\n### 🔍 Analyse et enjeux\n\n* **Souveraineté vs. solidarité européenne** : le projet illustre une tension entre États cherchant à agir seuls et la nécessité d’un cadre commun, pour éviter le cherry-picking sur les questions migratoires .\n* **Risque de précédent** : en ouvrant la porte à d’autres accords similaires, l’UE pourrait perdre sa cohésion dans la gestion de l’asile.\n* **Message au futur sommet UE** : alors que le président Macron est attendu à Londres début juillet, notamment sur ce dossier, ces protestations méditerranéennes pèsent lourd et pourraient freiner toute conclusion précipitée.\n\n---\n\n### 🧭 En résumé\n\nUn accord bilatéral franco-britannique sur la migration suscite l’opposition d’un groupe de pays méditerranéens, qui réclament une approche européenne unifiée. Derrière ce bras de fer se joue une question cruciale : la cohésion de l’Union face à des initiatives nationales jugées potentiellement dangereuses pour l’équilibre migratoire régional."
+                },
+                {
+                    image: "https://cloudfront-us-east-2.images.arcpublishing.com/reuters/JQWOGSYBTJICVEBJ4QA5ILT2CQ.jpg",
+                    date: "2025-06-27",
+                    title: "Société Générale visée par une perquisition pour fraude fiscale : perquisition des bureaux et domiciles d’ex-dirigeants",
+                    content: "Ce mardi 24 juin 2025, la Société Générale a été visée par une vaste opération de perquisitions, menée simultanément dans ses locaux à La Défense et au Luxembourg, ainsi qu’aux domiciles de quatre anciens cadres, dans le cadre dune enquête ouverte en janvier 2024 pour **blanchiment de fraude fiscale**, **fraude fiscale en bande organisée aggravée** et **association de malfaiteurs**, selon le Parquet national financier (PNF).\n\n### 🔍 Contexte et déroulement\n\n* L’enquête, confiée à l’Office national antifraude (Onaf) et au PNF, vise des montages fiscaux complexes mis en place depuis **2009**, principalement pour des grandes entreprises françaises, via la filiale de la banque au Luxembourg.\n* Environ **80 enquêteurs**, appuyés par **11 magistrats**, ont participé aux opérations en France et à l’étranger.\n* Sur les quatre individus placés en garde à vue, une personne a été relâchée sans poursuite, les trois autres gardes à vue ayant été prolongées.\n\n### 🏢 Cadres visés et domiciles perquisitionnés\n\nCes opérations ont visé les domiciles de quatre anciens ou actuels cadres dirigeants, interpellés pour avoir potentiellement organisé ces montages via une structure interne, notamment la division GLBA, chargée de financer les grandes entreprises de manière fiscalement optimisée.\n\n### 👥 Entreprises impliquées\n\nSelon « Le Monde » et confirmé par « France 24 », l’un des bénéficiaires présumés de ces schémas est **Lactalis**, suspecté d’avoir utilisé des montages fiscaux élaborés au Luxembourg par la Société Générale.\nLactalis, mis sous enquête dès 2018, a provisionné 300 M€ fin 2023 pour un litige fiscal, et conteste toute illégalité, affirmant que ses opérations étaient légales et « conçues par la SG ».\n\n### 📌 Distinction vis-à-vis des dossiers Cum‑ex\n\nCette procédure est clairement distincte de l’enquête en cours sur les montages « cum‑ex » ou « cum‑cum », visant les fraudes à l’impôt sur les dividendes initiées en 2023 et dans lesquelles SG était également impliquée.\n\n### 🗣️ Réaction de la Société Générale\n\nLa banque, contactée par les autorités et médias, **s’est refusée à tout commentaire** à ce stade de l’enquête.\n\n---\n\n### 🔎 Analyse – Enjeux et perspectives\n\n| Enjeu                         | Analyse                                                                                                                                       |\n| ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |\n| **Réputation & Confiance**    | Les révélations sur ces montages fiscaux jettent une ombre sur la banque, notamment sur son expertise GLBA.                                   |\n| **Poursuites judiciaires**    | Si le PNF confirme les infractions suivies de condamnations, des amendes lourdes et des poursuites pénales pourraient être engagées.          |\n| **Risque clientèle**          | Les grandes entreprises concernées pourraient subir des redressements fiscaux ou réclamer des dommages si des pratiques sont jugées abusives. |\n| **Impératif de transparence** | La Société Générale devra justifier de son rôle, notamment dans les montages transfrontaliers initiés au Luxembourg.                          |\n\n---\n\n### 🔮 Suite attendue\n\nLe PNF poursuivra l’analyse des éléments saisis durant les perquisitions. L’enquête devrait se prolonger dans les prochains mois, avec potentiellement des mises en examen, des redressements fiscaux, ou des poursuites à l’encontre de la banque et de ses dirigeants."
+                },
+                {
+                    image: "https://www.reuters.com/resizer/v2/5WEQCW2XL5LS7HXJHVT3ZLNGU4.jpg?auth=8bfb312f585ea0def5af5b5c8ff74438575da5dccfa364bf53f3150eb05b3946&quality=80&width=3856",
+                    date: "2025-06-27",
+                    title: "Olivier Giroud met fin à son aventure à LAFC et retrouve la Ligue 1 au LOSC",
+                    content: "**Fresnes, 27 juin 2025** – Un nom résonne à nouveau dans les couloirs de la Ligue 1 : Olivier Giroud. À 38 ans, le champion du monde 2018 a annoncé, ce vendredi 27 juin, la résiliation « d’un commun accord » de son contrat avec Los Angeles FC. Cette décision sonne la fin de son aventure américaine et ouvre la porte à un retour express en France, où il sengage avec le LOSC Lille dès la semaine prochaine, comme annoncé officiellement par le club .\n\n### 📝 Bilan et motivations du départ\n\n* Arrivé à LAFC l’été dernier dans le cadre d’un contrat de joueur désigné (Designated Player), Giroud aura disputé 37 rencontres toutes compétitions confondues. Il y a marqué cinq buts et délivré quatre passes décisives, dont celui décisif en finale de la U.S. Open Cup.\n* Le club et le joueur ont convenu de sceller ce départ après le match contre Vancouver Whitecaps, le 29 juin au BMO Stadium.\n* Après un parcours riche (Montpellier, Arsenal, Chelsea, AC Milan), Giroud effectue son retour en Ligue 1, 13 ans après son départ en 2012, laissant place à une expérience personnelle et professionnelle marquante aux États-Unis.\n\n### ⚽ Pourquoi Lille ?\n\n* Le LOSC, confronté aux départs de Jonathan David (contrat expiré) et de Chuba Akpom (retour à Ajax), cherchait un renfort de stature internationale. Le profil et l’expérience de Giroud séduit particulièrement la direction lilloise – notamment le président Olivier Létang – pour épauler lattaque et apporter un leadership précieux sur et en dehors du terrain.\n* Malgré un salaire estimé à environ 3 M€ à LAFC, plus élevé que celui envisageable à Lille, les négociations ont abouti, avec un probable compromis financier (1–1,5 M€/an).\n* Lassé de l’expérience californienne malgré un bilan satisfaisant, Giroud choisit de finir sa carrière près de chez lui, dans un club ambitieux capable de jouer en Ligue Europa.\n\n### 🔄 Conséquences pour LAFC\n\n* Le départ de Giroud libère une précieuse place de joueur désigné aux États-Unis. LAFC affiche clairement son ambition : tenter d’attirer Thomas Müller, libre après le Bayern Munich, pour renforcer son secteur offensif.\n* Le club pourrait compter sur les revenus du parcours en Coupe du Monde des Clubs – environ 9,55 M\$ plus 250 000\$ supplémentaires – pour financer ce recrutement.\n\n---\n\n### En résumé\n\nOlivier Giroud boucle la boucle : après une parenthèse américaine marquante à LAFC, il retrouve la Ligue 1 via Lille. Un retour aussi symbolique que sportif, au moment où les Dogues doivent rebâtir leur attaque. De son côté, LAFC, libéré d’un poste clé, se projette déjà vers un nouveau défi : recruter Thomas Müller pour rester compétitif l’an prochain."
+                },
+                {
+                    image: "https://www.lesherbiers.fr/media/2000-%2A-9999/cdf25-route-vendee-herbiers-1200-x-630.jpg",
+                    date: "2025-06-27",
+                    title: "Championnats de France de cyclisme aux Herbiers : les amateurs élites à l’honneur ce vendredi",
+                    content: "**Les Herbiers – Vendée, 27 juin 2025** – Après l’ouverture en contre-la-montre jeudi, place aujourd’hui à la course en ligne dédiée aux amateurs élites dans le cadre des Championnats de France sur route aux Herbiers.\n\n### 🗓️ Une matinée et un après-midi très attendus\n\n* **Matinée (9h00)** : place aux **amatrices élites** sur un circuit exigeant de 6 boucles, soit 99 km avec 1 320 m de dénivelé, l’arrivée est prévue vers midi au sommet du célèbre **Mont des Alouettes**.\n* **Après-midi (13h30)** : place aux **amateurs hommes**, un parcours plus long de 165 km (10 tours, 2 200 m de D+), avec arrivée également au sommet du Mont des Alouettes.\n\nCes courses s’inscrivent dans le programme global des Championnats organisés du 26 au 29 juin aux Herbiers, second événement national après le Tour de France.\n\n### 🌟 Focus résultats et insights\n\nDans le contre-la-montre d’hier, le Vendéen **Théo Lévêque (Vendée U)** a remporté le titre chez les amateurs, battant Léandre Huck dans les derniers mètres. Aujourd’hui, on attend des animations du même calibre sur le parcours en ligne.\n\n### 🎉 Au programme en parallèle\n\nTout au long de la journée, le public pourra profiter du **village animations** installé dans le jardin de Coria : ateliers pour enfants, food‑trucks, musique, concert le soir, et présentation des coureurs dès 18h30.\n\n---\n\n### 🎯 Pourquoi suivre ces courses ?\n\n1. **Montées décisives** – Le Mont des Alouettes agit comme juge de paix, avec ses 2,2 km à 4,7 % de pente par tour.\n2. **Proximité avec le public** – Six à dix passages garantissent suspense et contacts rapprochés avec les spectateurs.\n3. **Fierté locale** – Dans cette Vendée à forte tradition cycliste, l’épreuve amateur constitue un moment phare de la semaine et permet à de nouveaux talents d’émerger.\n\n---\n\n### 🔜 À suivre\n\n* **Classements finaux** à venir ce soir : découvrez le nom du nouveau champion de France amateur, homme et femme.\n* **Samedi & dimanche** : élites femmes et hommes seront en piste pour remporter les maillots tricolores.\n\n📺 Les courses sont également diffusées en direct sur **France Télévisions** et **Eurosport**, pour suivre l’intensité de l’effort en toute proximité.\n\n---\n\n## 💬 En résumé\n\nCe vendredi aux Herbiers est placé sous le signe de l’engagement amateur : matin et après-midi, les courses amateurs femmes et hommes s’annoncent passionnantes et décisives, avec le Mont des Alouettes en juge de paix. Une belle opportunité pour dénicher de futurs talents tout en profitant d’un cadre festif et convivial."
+                },
+                {
+                    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Empty_shelves_inside_Borders.jpg/1280px-Empty_shelves_inside_Borders.jpg",
+                    date: "2025-06-27",
+                    title: "Baisse des ventes de livres en France : –1,5 % en valeur, –3,1 % en volume ajusté de l’inflation",
+                    content: "En **2024**, le marché du livre en France a enregistré un **recul significatif** : les ventes ont diminué de **1,5 % en valeur**, soit un chiffre d’affaires de **2,902 milliards d’euros** (– 3,1 % une fois ajusté de l’inflation). Ce dernier point confirme un **marché en contraction**, marqué par une baisse à la fois des volumes vendus et de la capacité d’achat des lecteurs.\n\n---\n\n## 📊 Contexte et chiffres clés\n\n* **Baisse en volume** : le nombre d’exemplaires vendus poursuit sa chute, avec environ 3 % de recul ajusté, et jusqu’à **4 % selon Edistat**, à environ **301 millions d’exemplaires**.\n* **Ventes en valeur** : un autre baromètre, NielsenIQ & GfK, note une contraction légèrement moindre : –1 % sur le marché global du livre, avec un volume de **4,4 milliards d’euros**, mais en incluant des segments autres que ceux des éditeurs .\n* **Segments en souffrance** : BD, mangas et édition jeunesse sont les plus touchés, avec respectivement –9 % et –4,5 % en volumes.\n\n---\n\n## 🔍 Causes principales\n\n1. **Pression inflationniste et arbitrages des ménages**\n   Malgré une inflation modérée, les ménages privilégient les dépenses essentielles (alimentation, énergie, transports), au détriment des biens culturels.\n\n2. **Prix du livre en hausse**\n   Les maisons d’édition augmentent les prix pour compenser la hausse des coûts de production, repoussant certains lecteurs ; le prix moyen dépasse fréquemment les 20 €, frein supplémentaire.\n\n3. **Segmentation de la demande**\n   Seule la littérature générale, notamment la romance, résiste — avec une hausse de +3 % en volumes – tandis que BD/mangas et jeunesse plongent.\n\n4. **Surproduction éditoriale**\n   L’abondance de nouveautés complique la visibilité des titres, favorisant les invendus et la destruction d’exemplaires .\n\n---\n\n## 🎯 Zoom sur les segments\n\n* **Littérature générale** : +3 % en volume, portée par le phénomène romance .\n* **BD/Mangas** : chute marquée (\~–9 % en BD, –19 % en mangas) .\n* **Jeunesse** : baisse notable, –4 à –4,5 %.\n\n---\n\n## 💡 Enjeux et pistes pour les éditeurs\n\n* **Rationaliser la production** : réduire l’inflation du catalogue pour éviter les invendus.\n* **Stimuler la demande** : renforcer les campagnes marketing, notamment auprès des jeunes ou via des événements culturels.\n* **Valoriser la valeur culturelle** : développer des actions éducatives, bibliothèques, Pass Culture pour réinjecter le livre dans les priorités des consommateurs.\n* **Explorer les leviers numériques** : si le livre numérique représente \~10 % du CA édition, il reste un champ sous-exploité, notamment dans la littérature de niche ou jeunesse connectée.\n\n---\n\n## 🧭 En résumé\n\nL’année 2024 marque un **tournant** pour l'édition en France : des **ventes en recul significatif**, dopées uniquement par quelques segments, dans un contexte d'inflation tenace, de baisse de volume et de prix élevés. Les acteurs du livre sont à la croisée des chemins : **réduire la surproduction**, **redynamiser la demande** et **innover** seront essentiels pour inverser cette tendance."
+                },
+                {
+                    image: "https://archello.s3.eu-central-1.amazonaws.com/images/2020/04/06/zOliver-Wyman-01.1586170269.7049.jpg",
+                    date: "2025-06-27",
+                    title: "Oliver Wyman renforce son équipe parisienne : Julien Vincent nommé Partner",
+                    content: "Oliver Wyman annonce la nomination de **Julien Vincent** au poste de Partner au sein de son bureau de Paris, à compter de juin 2025. Il rejoindra les practices **Consumer, Telecom & Technology** et **Fusions & Acquisitions**, apportant avec lui plus de 20 années d’expertise en conseil et industrie, notamment dans les secteurs des télécoms, médias, technologies et fusions-acquisitions.\n\n---\n\n### 🎯 Un profil d’expert pour booster les practices clés\n\n* **Un parcours riche en transformation industrielle**\n  Julien Vincent commence sa carrière en 2001 chez Orange aux États‑Unis avant de poursuivre en France, où il contribue au lancement d’activités audiovisuelles et au déploiement de la fibre optique.\n\n* **Du conseil stratégique à l’international**\n  En 2010, il rejoint Kearney à Paris, où il accède au grade de Partner en 2019. Il y dirige la practice TMT (Telecom, Média, Technologie) pour la France, l’Europe et l’Afrique.\n\n* **Un savoir-faire transactionnel**\n  Sa nomination chez Oliver Wyman couvrira également la practice M\&A (Fusions & Acquisitions), soulignant ses compétences en intégration de groupes, transformations stratégiques et opérations complexes.\n\n---\n\n### 🔄 Contexte : un échange au sein du partnership\n\nCette arrivée intervient en même temps que le départ d’Éric Bach, un partner historique d’Oliver Wyman, qui quittait le cabinet fin mai 2025 après 26 ans de carrière, notamment à la tête du retail et consumer goods en France. Un véritable chassé-croisé stratégique, avec l’entrée de Vincent et la sortie d’un autre expert de longue date.\n\n---\n\n### ✅ Ce qu’apporte Julien Vincent à Oliver Wyman\n\n* Une **expertise sectorielle** pointue sur les télécoms, les médias, les technologies, la cybersécurité, les services IT, et même le sport.\n* Une **expérience prouvée en transformation et en fusions-acquisitions**, acquise au sein de Kearney.\n* Un **profil international** avec des expériences en projets menés en France, Europe et Afrique.\n\n---\n\n### 🌍 Perspectives pour le bureau parisien\n\nAvec une focus accru sur les marchés **TMT** et l’activité **M\&A**, Oliver Wyman Paris semble vouloir surmonter la croissance stagnante observée en 2024 pour les cabinets de conseil, avec un secteur en France prévoyant une croissance comprise entre –2 % et +1 % en 2025 selon Syntec Conseil. L’arrivée de Julien Vincent s’inscrit dans cette dynamique proactive, visant à renforcer les compétences clés de la team et à anticiper les besoins du marché.\n\n---\n\n### ℹ️ À propos d’Oliver Wyman\n\nFondée en 1984 et rattachée au groupe Marsh & McLennan Companies, **Oliver Wyman** est une firme internationale de conseil en stratégie et management, avec un chiffre d’affaires en constante progression et un effectif renforcé au bureau parisien."
+                },
+                {
+                    image: "https://img.vavel.com/gettyimages-2220980828-2048x2048-1750960084166.jpg",
+                    date: "2025-06-27",
+                    title: "Euro 2025 – France : une sélection ambitieuse côté offensif, mais un vestiaire sous tension",
+                    content: "La Fédération française de football (FFF) a dévoilé sa sélection pour l’Euro 2025 en Suisse : un effectif résolument tourné vers l’offensive, avec une densité de talents rares en attaque, mais traversé de tensions internes et de choix tactiques audacieux, souligne la Direction Technique Nationale (DTN).\n\n### ⚽ Une attaque qui fait (très) rêver\n\nLe sélectionneur Laurent Bonadei a misé sur un bloc offensif costaud :\n\n* **Marie‑Antoinette Katoto**, étincelante avec 37 buts en 53 sélections, revient enfin en pleine forme après sa longue blessure. Elle incarne l’énergie nouvelle du trio d’attaque avec **Kadidiatou Diani** et **Sandy Baltimore**.\n* La polyvalence technique des joueuses comme Cascarino ou Gago permet un jeu rapide, habile, parfois imprévisible.\n\n### 🧭 Des choix forts, parfois contestés\n\nBonadei n’hésite pas à trancher dans le vif :\n\n* Aucun retour pour des figures historiques telles que **Wendie Renard**, **Eugénie Le Sommer** et **Kenza Dali**, totalisant plus de 550 caps.\n* En conférence de presse, il a invoqué le fameux adage d’Einstein : la folie, c’est refaire toujours la même chose en espérant un résultat différent.\n  Autant de signaux clairs : une rupture nette avec l’héritage de Renard à la tête de l’équipe.\n\n### ⚙️ Tensions internes vs stratégies innovantes\n\n* La transition vers un esprit collectif performant génère quelques tensions : la DTN relève des débats sur le positionnement des joueuses, ou des postures trop affirmées hors de leur rôle naturel.\n* Sur le plan tactique, Bonadei expérimente : limitation du groupe à 23 joueuses pour renforcer la cohésion, déploiement de systèmes tactiques inhabituels comme le 3-4-3, en vue d’adapter le collectif à chaque adversaire.\n\n### 🛡️ Leadership retenu et rassemblement\n\n* Grace Geyoro, désormais vice-capitaine à 27 ans et 98 sélections, émerge comme le trait d’union entre l’ancien et le nouveau cycle. Elle met en avant l'importance d'une unité forte pour aller défier l’Angleterre dès le 5 juillet à Zurich.\n* En coulisses, Bonadei s’appuie aussi sur un préparateur mental, signe d’un projet ambitieux et global pour renforcer la résilience collective.\n\n### 🎯 Le défi : transformer la promesse en performance\n\n* Les Bleues sont clairement attendues : après un parcours en demi-finales de l’Euro 2022, elles veulent enfin passer un cap décisif.\n* L’ambition est claire : dominer un groupe très relevé (Angleterre, Pays‑Bas, etc.), en capitalisant sur l’énergie offensive, la cohésion nouvelle et les schémas tactiques innovants, tout en maîtrisant les risques liés à un vestiaire en mutation."
+                }
+            ],
+            europe: [
+                {
+                    image: "https://www.consilium.europa.eu/media/ig1h1q2m/roundtable-ukraine.jpg",
+                    date: "2025-06-27",
+                    title: "Solidarité renforcée, défense européenne et soutien au Moyen‑Orient : le Conseil européen des 26‑27 juin à Bruxelles",
+                    content: "**Bruxelles, 27 juin 2025** – Les chefs d’État et de gouvernement de l’Union européenne se sont retrouvés à Bruxelles les 26 et 27 juin pour un nouveau Conseil européen placé sous le signe de la solidarité, de la sécurité et de la diplomatie.\n\n### 🔹 Une aide massive à l'Ukraine : 158,6 milliards d’euros\n\nL’Union européenne et ses États membres ont confirmé un soutien financier total de **158,6 milliards d’euros** à l’Ukraine depuis le début de la guerre, dont **59,6 milliards spécifiquement dédiés à l’aide militaire**. Les dirigeants ont réaffirmé leur volonté de maintenir un appui financier « régulier et prévisible », en coordination avec les alliés et partenaires partageant les mêmes valeurs.\n\n### 🔹 Renforcer la défense européenne via l’instrument SAFE\n\nUn grand chantier a concerné l’instrument **SAFE** (Security Action for Europe) : un mécanisme budgétaire conçu pour financer des projets de défense à hauteur de **150 milliards d’euros**, sous forme de prêts à long terme. SAFE vise à stimuler les capacités industrielles et technologiques de l’Union, notamment dans les domaines prioritaires (munition, drones, cyber, mobilité militaire…). En permettant à l’industrie ukrainienne de rejoindre le processus, l’UE soude encore davantage ses approches industrielles et stratégiques .\n\n### 🔹 Sanctions contre la « flotte fantôme » russe\n\nÀ la suite de l’adoption du 17ᵉ train de sanctions, les États membres ont appelé à des mesures accrues contre la « flotte fantôme » de pétroliers russes, souvent utilisés pour contourner les embargos. Un haut responsable a insisté sur la nécessité de renforcer les dispositifs anticontournement et d’imposer de nouvelles sanctions ciblées pour réduire les revenus de la Russie.\n\n### 🔹 Un soutien global à la paix au Moyen‑Orient\n\nLes dirigeants ont également exposé une stratégie de soutien diplomatique et humanitaire au Moyen‑Orient. L’Union appelle à un **cessez‑le‑feu immédiat à Gaza**, à la levée du blocus, à la libération des otages et à un accès sans entrave de l’aide humanitaire. L’UE s’est déclarée attachée à la solution à deux États et s’est dite prête à soutenir l’Autorité palestinienne, tout en appelant au respect du droit international et à la retenue de toutes les parties.\n\n---\n\n### 📝 En résumé\n\n| Principaux points | Détails                                                   |\n| ----------------- | --------------------------------------------------------- |\n| **Ukraine**       | 158,6 Mds € d’aide, dont 59,6 Mds € pour l’armée          |\n| **SAFE**          | 150 Mds € de prêts concertés pour renforcer la défense    |\n| **Sanctions**     | Renforcement ciblé contre la flotte russe fantôme         |\n| **Moyen‑Orient**  | Appel au cessez‑le‑feu, soutien humanitaire, diplomatique |\n\nL’ordre du jour faisait aussi figurer d'autres sujets stratégiques (migrations, compétitivité, sécurité intérieure), mais l’accent a clairement été mis sur la solidarité militaire et la diplomatie multilatérale. Le message est clair : l’UE affiche une volonté de renforcer ses capacités de souveraineté, tout en inscrivant son action dans un cadre global de paix et de stabilité."
+                },
+                {
+                    image: "https://assets.kyivindependent.com/content/images/2025/06/IMG_6197-1.jpg",
+                    date: "2025-06-27",
+                    title: "Zelensky formalise la coordination des sanctions avec l’UE et le G7, malgré le veto slovaque sur le 18ᵉ paquet",
+                    content: "Le président ukrainien Volodymyr Zelensky a signé le **27 juin 2025** un décret visant à **synchroniser la politique ukrainienne de sanctions contre la Russie** avec celle de l’Union européenne et des pays du G7.\n\n### Contexte de l’initiative\n\n* Ce décret répond à une décision du Conseil national de sécurité et de défense de l’Ukraine : toute sanction adoptée par l’UE ou le G7 doit être soumise au NSDC dans un **délai de 15 jours** pour évaluation .\n* Les ministères concernés en Ukraine – notamment le Conseil des ministres, le SBU et la Banque nationale – sont mandatés pour assurer la mise en œuvre nationale de ces mesures extra-territoriales.\n\n### Pourquoi maintenant ?\n\n* L’UE a récemment prolongé, le **26 juin**, le **17ᵉ paquet de sanctions** six mois supplémentaires, visant des secteurs clés de l’économie russe.\n* Toutefois, le **18ᵉ paquet**, incluant des mesures renforcées contre l’énergie et la finance russes, **n’a pas été adopté** en raison du **véto du Premier ministre slovaque Robert Fico**, qui réclame d’abord des garanties concernant les approvisionnements en gaz de son pays.\n\n### Les implications pour l’Ukraine et ses alliés\n\n* Par cette formalisation, Zelensky souhaite éviter des **décalages** entre les sanctions internationales et leurs contreparties ukrainiennes, garantissant ainsi une **position plus cohérente** face à la Russie.\n* Cette démarche vise également à renforcer la pression coordonnée face aux efforts diplomatiques russes, et à garantir que les sanctions « fassent véritablement mal » à Moscou .\n\n### Entraves et défis à venir\n\n* Le veto slovaque sur le 18ᵉ paquet illustre les **divergences internes au sein de l’UE** : Robert Fico demande notamment un certificat pour éviter un arrêt brutal des importations de gaz après 2027, un point crucial pour la Slovaquie.\n* Budapest partage des réticences similaires, bien que la Hongrie se soit montrée plus souple récemment.\n\n### Ce qui va suivre\n\n* Un vote pour débloquer le 18ᵉ ensemble de sanctions est attendu dès que la Slovaquie aura obtenu des **garanties suffisantes** et que les inquiétudes liées aux contrats de gaz seront réglées .\n* En parallèle, l’Ukraine devra maintenant intégrer les nouvelles sanctions européennes dans son cadre juridique et pratique, conformément au décret de Zelensky.\n\n---\n\n**Conclusion**\nEn formalisant cette coordination, Zelensky renforce la **résilience juridique et politique de l’Ukraine** face à la Russie. L’initiative vise à assurer que les mesures internationales ne restent pas des résolutions symboliques, mais deviennent des actions concrètes, alignées et efficaces. Reste à voir si l’entente européenne évoluera rapidement pour débloquer le **18ᵉ paquet**, condition sine qua non pour intensifier la pression sur Moscou."
+                },
+                {
+                    image: "https://static.euronews.com/articles/stories/09/34/47/18/1536x864_cmsv2_6efdfcd9-7857-5156-b130-ccc6d3713494-9344718.jpg",
+                    date: "2025-06-27",
+                    title: "Commission européenne paralysée : Hongrie et Slovaquie font échouer le 18ᵉ train de sanctions, Zelensky exige un durcissement immédiat",
+                    content: "**Bruxelles, 27 juin 2025 –** Lors du sommet européen de cette semaine, l’Union européenne n’a pas réussi à adopter son 18ᵉ train de sanctions contre la Russie. La Hongrie et la Slovaquie ont opposé un veto, bloquant ainsi l’initiative, tandis que le président ukrainien Volodymyr Zelensky a appelé de ses vœux un renforcement encore plus radical des mesures restrictives.\n\n### 🛑 Oppositions centrales : dépendance énergétique vs pression politique\n\n* **Hongrie et Slovaquie main dans la main**\n  Les deux États rejettent le paquet principalement en raison de clauses visant à supprimer les importations d’énergie russe d’ici 2027–2028, comme promis par la Commission via son plan RePowerEU. Or, ces pays restent fortement dépendants du gaz et du pétrole russe via le pipeline Druzhba :\n\n  * Viktor Orbán a exprimé sa crainte que l’embargo n’entraîne une explosion des coûts énergétiques pour les ménages.\n  * Robert Fico a estimé qu’imposer ces mesures sans garanties constitue un « suicide économique » pour la Slovaquie, en raison de contrats de gaz à long terme avec Gazprom. Il menace même de réclamer des compensations à hauteur de 20 milliards d’euros.\n\nAu niveau diplomatique, leur veto tactique vise à obtenir des assurances sur les approvisionnements en énergie, notamment des mécanismes de limitation des tarifs du transit gazier et des garanties d’approvisionnement continu.\n\n### 🇺🇦 Zelensky : « Un paquet plus sévère, maintenant »\n\nPendant ce temps, Volodymyr Zelensky maintient la pression sur Bruxelles. Il a appelé les dirigeants européens à adopter un **18ᵉ paquet encore plus strict**, ciblant notamment :\n\n* le plafonnement des revenus pétroliers russes à 30 \$ le baril (contre 45 \$ proposé initialement) ,\n* le renforcement des sanctions sur la shadow fleet russe, les banques, et l'industrie militaire .\n\nZelensky insiste pour que l’Europe envoie un **signal politique clair** : « les sanctions restent le levier le plus efficace », a-t-il affirmé, soulignant aussi son soutien à l’adhésion de l’Ukraine à l’UE .\n\n### 🔄 Quelles perspectives ?\n\n* **Sanctions existantes prolongées** : l’UE s’est accordée pour prolonger les mesures déjà en place, tandis que l’adoption du 18ᵉ train est reportée.\n* **Optimisme prudent** : selon Reuters, les diplomates européens tablent sur un accord d’ici la fin de semaine, avec un possible compromis permettant à la Hongrie de se rallier si Bratislava accepte .\n* **Négociations à venir** : les discussions se poursuivent entre les capitales et la Commission, notamment autour des garanties énergétiques, avant qu’un vote unanime soit possible .\n\n---\n\n**En résumé**, l’UE se retrouve à un tournant décisif. Si la dépendance énergétique de deux pays clés bloque momentanément un durcissement contre la Russie, le message politique de Zelensky reste clair : les sanctions doivent être renforcées. Le défi en cours : concilier sécurité énergétique et solidarité face à la guerre."
+                },
+                {
+                    image: "https://static.euronews.com/articles/stories/09/18/24/44/1536x864_cmsv2_a2d21fb0-617f-5dbd-b797-5ac2a17cf107-9182444.jpg",
+                    date: "2025-06-27",
+                    title: "Vers un accord UE–USA d’ici le 9 juillet pour éviter une guerre tarifaire sur l’acier et l’aluminium",
+                    content: "Face à une montée des tensions commerciales entre l’Union européenne et les États‑Unis, la Commission européenne a affirmé qu’un accord pourrait être trouvé avant le **9 juillet**, afin d’éviter une escalade tarifaire sur l’acier et l’aluminium.\n\n---\n\n## 🔍 Une échéance cruciale : le 9 juillet\n\nLa présidente de la Commission européenne, Ursula von der Leyen, a rappelé l’urgence de conclure un « bon » accord avec Washington avant la date butoir du 9 juillet. Cette échéance a été fixée après qu’**EU** et **USA** ont convenu, via un appel téléphon\n\n---\n\n## Pression maximale sur les négociations\n\nLes représentants de l’UE examinent actuellement le dernier document soumis par les États‑Unis. Avec l’approche du mois de juillet, la pression monte : les droits en place sont déjà élevés — 25 % sur l’acier et l’automobile, 10 % sur la majorité des autres biens . En l’absence d’accord, ces taxes pourraient passer à 50 % pour les importations européennes, menaçant les chaînes d’approvisionnement et la compétitivité des industriels .\n\n---\n\n## Une approche pragmatique de l’Union\n\n* L’UE semble prête à accepter un compromis asymétrique : maintenir certaines surtaxes sur des produits européens pour calmer les esprits à Washington, tout en préservant des exemptions clés dans des secteurs stratégiques comme l’automobile, la pharmacie ou l’aéronautique .\n* L’idée est de permettre à l’Amérique de revendiquer une victoire symbolique, sans que les conséquences économiques pour l’Europe soient trop lourdes.\n\n---\n\n## Enjeux économiques et politiques\n\n* **Économiques** : des droits de douane élevés freinent les exportations européennes vers les États‑Unis, augmentent les coûts pour les entreprises et les consommateurs, et peuvent pousser à la réorientation des chaînes d’approvisionnement vers d’autres marchés.\n* **Politiques** : un accord éviterait une confrontation entre alliés, maintiendrait la stabilité des relations transatlantiques, et permettrait à l’UE de conserver une marge de manœuvre vis-à-vis de l’OMC et des représailles américaines .\n\n---\n\n## Ce qu'il faut surveiller\n\n| Éléments clés              | Enjeux                                                                                                                  |\n| -------------------------- | ----------------------------------------------------------------------------------------------------------------------- |\n| **Proposition américaine** | L’UE examine les dernières suggestions des USA dans le cadre des discussions en cours  |\n| **Position européenne**    | Elle est contraignée par la pression interne (industrie, États membres), mais cherche à limiter les dégâts              |\n| **Échéance**               | Le 9 juillet est une date-charnière pour éviter une hausse drastique des taxes douanières                               |\n\n---\n\n## 🚨 À retenir\n\n1. La **Commission européenne** vise à conclure un accord avec les États‑Unis **avant le 9 juillet** pour éviter l’implantation ou l’aggravation de tarifs sur des produits importants.\n2. L’UE est prête à accepter une certaine asymétrie dans l’accord — quelques surtaxes ciblées — en échange d’exemptions sur les secteurs vitaux.\n3. L’enjeu dépasse l’économique : il s’agit aussi de maintenir une cohésion politique entre alliés et préserver un cadre commercial stable à l’échelle mondiale.\n\n---\n\nEn résumé, la Commission européenne travaille d’arrache‑pied pour éviter une guerre tarifaire UE–USA, consciente qu’un accord pragmatique mais équilibré pourrait désamorcer une crise au potentiel dramatique pour les deux économies."
+                },
+                {
+                    image: "https://xtb.scdn5.secure.raxcdn.com/default/0104/02/chart-100.png",
+                    date: "2025-06-27",
+                    title: "Optimisme sur les marchés européens : geopolitiqu e apaisée et perspectives de baisse des taux américains stimulent les actions",
+                    content: "Les principaux indices européens ont terminé la séance de vendredi sur une note très positive, portés par un cocktail favorable : un climat géopolitique moins tendu et des signes croissants d’assouplissement de la politique monétaire américaine.\n\n### 📈 Rebond soutenu des marchés européens\n\nLe **STOXX Europe 600** a grimpé de **1,1 %**, retrouvant son plus haut niveau depuis plus d'une semaine et mettant fin à deux semaines de repli . En Allemagne, le **DAX** a signé sa plus forte hausse hebdomadaire en deux mois, alors qu\n\n### 🚗 Les valeurs cycliques et autos en tête\n\nLa progression a été portée notamment par les valeurs automobiles et de luxe, sensibles aux rebonds des perspectives de trade, en particulier avec l’amélioration des échanges entre les **États-Unis et la Chine** . Le rallye des actions automobiles et de luxe (+4,1 % et +2,5 %) reflète cette dynamique optimiste .\n\n### 🕊️ Le facteur géopolitique : désescalade au Moyen-Orient\n\nLa multiplication des signaux positif s — notamment un cessez-le-feu entre Israël et l’Iran — a réduit la prime de risque sur les marchés . Le pétrole, après une hausse liée aux tensions, a finalement corrigé, écartant les pressions inflationnistes sur l’Europe .\n\n### 🇺🇸 Vers un virage monétaire à venir de la Fed ?\n\nAux **États-Unis**, les indi  cateurs économiques récents se sont montrés plus faibles (baisse des revenus personnels et de la consommation en mai) . Cette fragilité nourrit les attentes d’une politique plus accommodante : *“mounting expectations of more Federal Reserve rate cuts”* . Des discours plus dovish, voire un éventuel changement de gouvernance, renforcent cette anticipation .\n\n### 💡 Contexte global et repositionnement d’actifs\n\nLe récent « great rotation » des investissements hors‑USA vers les marchés développés (Europe, Japon, émergents) s’accélère, stimulé par un dollar affaibli, des valorisations attractives à l’étranger et un sentiment général favorable . L’année 2025 pourrait voir une cassure structurelle en faveur des actifs internationaux .\n\n---\n\n### 🔍 En résumé\n\n* **Géopolitique apaisée** (Israël‑Iran) = baisse des primes de risque, pétrole en repli.\n* **Décélération économique aux États-Unis** → multiplication des anticipations de **baisses de taux** par la Fed.\n* **Rotation structurelle vers l’Europe** : capital en quête de meilleures performances hors USA.\n\nAvec ces moteurs conjoints, les marchés européens affichent une vigueur retrouvée, porteurs d’un regain de confiance pour les investisseurs. Le prochain rendez-vous déterminant : la publication des données de l’inflation américaine (PCE), qui pourrait confirmer ou freiner cette euphorie."
+                },
+                {
+                    image: "https://www.euractiv.com/wp-content/uploads/sites/2/2023/10/110798981-scaled.jpg",
+                    date: "2025-06-27",
+                    title: "Vers une « Union de l’épargne et des investissements » : le pari d’Enrico Letta pour contrer la domination de Wall Street",
+                    content: "Dans une vaste interview accordée au *Financial Times* ce 27 juin 2025, l'ancien Premier ministre italien Enrico Letta tire la sonnette d'alarme : tant que l’Europe conservera 27 marchés financiers fragmentés, elle restera à la merci de Wall Street . Il propose une réforme radicale : rebaptiser l’« Union des marchés de capitaux » en « Union de l’\n\n### 🎯 Pourquoi ce changement de nom ?\n\nPour Letta, ce simple changement d’étiquette symbolise une transformation profonde : il ne s’agit pas seulement d’harmoniser des règles, mais de relier directement l’épargne des citoyens aux grands projets d’intérêt général — digital, vert, sécuritaire — et ainsi renforcer l’économie réelle .\n\n### Les piliers de sa vision\n\n1. **Supervision renforcée**\n   Passage d'une régulation nationale à une autorité européenne unique renforcée (AEMF), sur le modèle du mécanisme de surveillance unique des banques .\n\n2. **Point d'entrée, 28ᵉ régime**\n   Mise en place d’un point unique d’accès aux marchés européens, avec un cadre juridique commun (« 28ᵉ régime ») inspiré du modèle du Delaware, pour simplifier les procédures transfrontalières .\n\n3. **Produits d’épargne transfrontaliers attractifs**\n   Incitation à créer des fonds d’investissement européens à faibles frais et incitatifs pour sortir l’épargne du giron purement domestique .\n\n4. **Actif européen « safe »**\n   Préparation d’un actif sûr européen, appuyé par la récente ouverture positive venue d’Allemagne, afin de réduire la dépendance au dollar .\n\n5. **Calendrier clair**\n   Objectif affiché : lancement opérationnel au 1ᵉʳ juillet 2027, date symbolique pour la mise en chantier de cette nouvelle union financière .\n\n### 💰 Enjeux et freins\n\n* **Une fuite massive d’épargne** : 300 milliards d’euros s’échappent chaque année hors d’Europe pour alimenter les marchés américains, privant ainsi l’Europe de relais de croissance essentiels .\n* **Résistances nationales** : plusieurs États, notamment l’Allemagne, craignent une perte de souveraineté, freinant la mise en place d’une supervision véritablement européenne .\n* **Complexité juridique** : harmoniser 27 législations (fiscalité, solvabilité, droit des entreprises) est un défi colossal — la solution du 28ᵉ régime pourrait constituer un compromis viable .\n\n### 🌍 Une ambition stratégique\n\nLetta ne cache pas l’enjeu : face à la puissance financière américaine et chinoise, l’Europe doit devenir autonome et compétitive. Sa vision dépasse la simple intégration : il veut créer un véritable marché financier européen, capable d’attirer et de canaliser les capitaux et de soutenir les secteurs d’avenir. Le but ultime : rompre avec la dépendance à l’économie américaine et hisser l’euro au rang de monnaie de référence mondiale — avec la digitalisation comme levier .\n\n---\n\nCette proposition marque un tournant dans le débat européen sur l’union des marchés. Désormais, la question est de savoir si l’Europe saura dépasser ses divisions nationales pour transformer l’épargne en force d’investissement structurante."
+                },
+                {
+                    image: "https://upload.wikimedia.org/wikipedia/commons/8/83/Intense_marine_heatwave_hits_the_western_Mediterranean_Sea_%28Copernicus_2025-06-25%29.png",
+                    date: "2025-06-27",
+                    title: "Vague de chaleur exceptionnelle dans le sud de l’Europe : thermomètres grimpant au‑delà de 40  °C, feux et alertes sanitaires",
+                    content: "### Un épisode caniculaire historique\n\nUne vague de chaleur intense s’abat actuellement sur le sud de l’Europe — notamment l’Italie, l’Espagne et le Portugal — avec des températures qui dépassent les 40 °C. Les autorités nationales ont déclenché des niveaux d’alerte élevés dans de nombreux départements. Au Portugal, plusieurs districts sont déjà en alerte orange, prévoya\n\n### L’Italie suffoque sous les records\n\nEn Italie, des dizaines de villes sont sous alerte, certains relevés ayant atteint des températures record en plaine et sur les hauteurs. Des prévisions annoncent des sommets inédits, avec des pics potentiels jusqu’à 48 °C en Sardaigne .\n\n### Risques accrus : incendies, santé et environnement\n\nLa chaleur rappelle les épisodes caniculaires extrêmes de 2017, 2019 ou 2021 . La combinaison de chaleur sèche, de vents forts et de conditions asséchées alimente dès maintenant des départs de feux. Les services anti-incendie se mobilisent partout, notamment en France où certains massifs sont déjà fermés .\n\nSur le plan sanitaire, les nuits tropicales (températures ne descendant pas en dessous de 20–25 °C) et la stabilité de la chaleur provoquent un stress thermique accru, exacerbé par l’assimilation de l’air vicié et la déshydratation. Des décès dus à des coups de chaleur sont déjà signalés, comme l’a rapporté l’Espagne .\n\n### Causes et prévisions : des phénomènes météorologiques extrêmes\n\nÀ l’origine de cet épisode : une dorsale anticyclonique très puissante, installée au‑dessus du sud-ouest européen, repoussant vers le sud une masse d’air chaud saharien . Ce blocage devrait persister au minimum jusqu’à la fin du week-end, avec un risque réel que les températures restent élevées début juillet .\n\n### Recommandations et vigilance\n\nLes services météo et de santé recommandent :\n\n* **🔹 Hydratation permanente** : boire régulièrement, éviter alcool et boissons sucrées\n* **🔹 Protection solaire** : vêtements légers, chapeaux, crème solaire\n* **🔹 Heures à risque** : limiter déplacements entre midi et 18 h\n* **🔹 Précaution homes** : garder les plus vulnérables (seniors, enfants) à l’abri de la chaleur\n* **🔹 Vigilance incendie** : respecter interdictions dans les massifs forestiers, éviter feu en plein air\n\n---\n\n### En résumé\n\nUn épisode caniculaire notable touche actuellement le sud de l’Europe avec des températures dépassant largement la barre des 40 °C. Conséquences : une forte menace d’incendies, des risques sanitaires élevés et des prévisions météo difficilement rassurant"
+                },
+                {
+                    image: "https://img.oedigital.com/images/maritime/w800/denmark-grants-first-offshore-wind-farm-lifespan-extension-permit-160706.jpeg",
+                    date: "2025-06-27",
+                    title: "Danemark : un avertissement fort à l’UE sur la transition écologique",
+                    content: "Le **Danemark** appelle à ne pas ralentir la transition énergétique au sein de l’Union européenne, alors que la **Commission européenne** s’apprête à proposer un objectif inédit : la **réduction de 90 % des émissions de gaz à effet de serre d’ici 2040** (par rapport aux niveaux de 1990).\n\n### 📌 Une cible 2040 au cœur des débats\n\nDans le cadre des préparatifs de son entrée en présidence tournante de l'Union en juillet, le Danemark, représenté par son ministre du Climat **Lars Aagaard**, a lancé un message clair : face aux pressions financières et géopolitiques, notamment celles l\n\nEn effet, l’UE compte officiellement dévoiler la semaine prochaine un objectif visant à réduire ses émissions de 90 % d'ici 2040. Cette ambition vise à créer un pont crédible entre l’objectif de -55 % fixé pour 2030 et la neutralité carbone prévue en 2050 .\n\n### 👥 Oppositions multiples\n\nCependant, plusieurs États, comme la **Pologne** et la **France**, s’inquiètent du coût économique d’un tel engagement. Lars Aagaard estime cependant qu’il n’y a **pas d’opposition entre économie et écologie** : investir dans les énergies renouvelables et le nucléaire renforcerait l’indépendance énergétique et la compétitivité de l’Europe .\n\nPar ailleurs, le débat s’inscrit dans un contexte international : si certains discutent de compenser des réductions d’émissions via des **crédits carbone internationaux**, d’autres dénoncent le risque de s'en reposer trop lourdement .\n\n### 🌍 Contexte global\n\nLes États de l’Union ont déjà revu à la baisse certaines mesures vertes sous la pression des secteurs industriels et des gouvernements locaux. Malgré cela, selon Aagaard, il serait **inacceptable d’abandonner le cap** en matière écologique, même en période de montée des tensions sécuritaires .\n\nSelon un rapport du Conseil scientifique consultatif européen, un objectif de **90–95 % de réduction d'ici 2040** serait la seule trajectoire réaliste pour atteindre la neutralité carbone en 2050 .\n\n### ✅ Que faire ?\n\nLe défi pour la Commission européenne sera donc de **déployer une stratégie crédible** qui allie :\n\n* Accélération des investissements dans les renouvelables et le nucléaire ;\n* Soutien financier aux secteurs en transition ;\n* Adoption d’un cadre garantissant une **transition juste**, sans surtaxes injustes pour les citoyens ;\n\nTout cela dans un climat politique de plus en plus tendu.\n\n---\n\n### En résumé\n\nSous son futur mandat à la présidence de l’UE, le Danemark envoie un signal **sans ambiguïté** : la transition écologique **ne peut pas attendre ni reculer**, surtout en cette période de **crise climatique** (2023 a battu un record de chaleur) et d’insta"
+                },
+                {
+                    image: "https://d1ldvf68ux039x.cloudfront.net/thumbs/photos/2307/7901321/1000w_q95.jpg",
+                    date: "2025-06-27",
+                    title: "Changement de commandement au Public Health Command Europe à Landstuhl",
+                    content: "**LANDSTUHL, Allemagne —** Le 27 juin 2025 a été marqué par une cérémonie solennelle de passation de commandement au Public Health Command Europe (PHCE), organisé à Landstuhl, en Allemagne. Lors de cet événement, le Colonel Paul Lang a officiellement remis le commandement au Colonel Anastasia McKay .\n\nBrigadier General Roger Giraud, général commandant du Medical Readiness Command Europe et chirurgien de l’U.S. Army Europe and Africa Command, a dirigé la cérémonie. Le Colonel McKay, jusqu’alors chirurgien commandement au 21st Theater Sustainment Comman\n\nDans ses premières déclarations, le Colonel McKay a souligné le rôle central de sa mission : « Notre mission a un impact direct sur la préparation, la résilience et la santé de nos forces en Europe, en Afrique et au Moyen‑Orient » .\n\nCette passation de commandement illustre la tradition militaire américaine : la remise du drapeau symbolise le transfert de responsabilités, d’autorité et de responsabilité. C’est également le moment où l’unité découvre son nouveau chef, tout en marquant le départ du précédent commandant .\n\n---\n\n**Contexte & enjeux**\n\nLe PHCE assure un rôle crucial dans la santé publique militaire : protection des forces, épidémiologie, médecine préventive, santé environnementale et vétérinaire. Avec des déploiements couvrant plus de 40 pays pour les Commandements Europe, Afrique et Moyen-Orient, cette structure garantit la capacité opérationnelle et la santé des forces alliées.\n\n---\n\n**Portrait du nouveau commandant : Col. Anastasia McKay**\n\n* **Dernier poste occupé** : Chirurgien commandement (Command Surgeon) du 21st Theater Sustainment Command jusqu'en juin 2025 .\n* **Commandement** : Il s’agit de sa deuxième prise de commandement, démontrant son expertise dans la gestion de la santé des troupes.\n\n---\n\n**Héritage du Colonel Paul Lang**\n\nArrivé à Landstuhl en juin 2023, le Colonel Lang avait pris le relais du Colonel Kenneth Spicer. Pendant son mandat, il a renforcé les capacités de santé publique sur le terrain, dans des territoires variés et souvent sensibles, notamment en Europe et au-delà. Son départ marque la fin d’un cycle de leadership réussi, avant que le Colonel McKay ne reprenne le flambeau.\n\n---\n\n**Une mission toujours plus essentielle**\n\nÀ l’heure où les défis sanitaires se multiplient — crises épidémiques, résilience au sein des forces, coopération médicale interalliée — le rôle du PHCE reste stratégique. Le changement de commandement à Landstuhl renforce cette dynamique, sous la houlet\n\n---\n\nCe transfert de commandement illustre à la fois la continuité et le renouveau au sein de l’organisation, avec la promesse d’une mission toujours plus efficace, coordonnée et adaptée aux enjeux actuels."
+                },
+                {
+                    image: "https://www.iiea.com/images/uploads/general/Defence_Forces_2030_and_beyond.jpg",
+                    date: "2025-06-27",
+                    title: "« Dublin adhère à SAFE : grande accélération de la modernisation militaire »",
+                    content: "L’Irlande vient de franchir une étape fondamentale dans son renforcement militaire en rejoignant l’initiative européenne **Security Action for Europe (SAFE)**. L’accord, formalisé aujourd’hui par le ministre de la Défense Simon Harris, permet à Dublin d'accéder à des achats groupés de drones, systèmes antiaériens, et équipements sous-marins, grâce à une enveloppe européenne de prêts à taux avantageux évaluée à 150 milli\n\n### 🚀 Une réponse rapide et économique aux défis actuels\n\nGrâce à SAFE, l’Irlande pourra acquérir des équipements militaires clefs — drones, artillerie, systèmes cyber, radars, sonar, missiles antiaériens et navals — plus rapidement qu’en suivant ses anciennes procédures nationales, avec un gain de temps pouvant atteindre deux années . Cette mutualisation permet aussi des économies substantielles : rejoignant d’autres États européens dans des commandes groupées (ex. : une commande allemande peut s’élargir pour inclure l’Irlande à moindre coût) .\n\n### 💶 Objectif budgétaire : 1,5 milliard € d’ici 2028\n\nL’adhésion à SAFE s’inscrit dans un plan de modernisation de la défense irlandaise, récemment réévalué par la Commission sur l’avenir des forces armées. L’ambition est claire : passer d’un budget de défense historiquement faible (0,25 % du PIB) à **1,5 milliard € d’ici 2028**, tout en recrutant 2 000 personnes supplémentaires . Cette transformation inclut aussi l’acquisition de radars aériens, de sonars remorqués sous-marins — le contrat avec Thales DMS France visé à un déploiement en \n\n### ⚖️ Neutralité réaffirmée… sans concessions\n\nSi certains craignent que ce mouvement n’affaiblisse la neutralité traditionnelle de l’Irlande, le gouvernement assure que l’adhésion à SAFE est **volontaire et transparente**, sans impact sur le statut neutre du pays dans les engagements militaires extérieurs .\n\n### 🔍 Contexte géopolitique\n\nL'initiative européenne SAFE s’inscrit dans le cadre plus large du plan **ReArm Europe**, qui vise à consacrer 800 milliards € à la souveraineté militaire européenne. La guerre en Ukraine, la présence russe dans l’Atlantique Nord et le « retournement » perçu des États-Unis ont clairement insufflé un sentiment d’urgence stratégique . De plus, un sondage récent indique que près de 45 % des Irlandais soutiennent ces efforts de renforcement militaire .\n\n---\n\n### ⚙️ Ce que ça signifie pour l’Irlande\n\n| Aspect         | Impact                                                   |\n| -------------- | -------------------------------------------------------- |\n| **Procédures** | Accès simplifié et accéléré à des technologies de pointe |\n| **Budget**     | Objectif de 1,5 milliard € annuel d’ici 2028             |\n| **Capacités**  | Acquisition de drones, sonar, radars, antiaériens, etc.  |\n| **Emploi**     | +2 000 postes dans les forces armées                     |\n| **Neutralité** | Maintien assuré, participation volontaire                |\n\n---\n\n### 🧭 En bref\n\nAvec l’adhésion à SAFE, l'Irlande entre dans une nouvelle ère de sa  politique de défense : plus rapide, plus robuste et alignée sur les exigences géopolitiques actuelles. L’objectif : moderniser ses forces, mieux protéger ses infrastructures critiques, et préserver une neutralité réaffirmée, tout en jouant un rôle actif dans la sécurité européenne."
+                },
+                {
+                    image: "https://www.reuters.com/resizer/v2/I6BMGKOQ3RLNTNT5KEGQI7DRSY.jpg?auth=edd9b0686f5ef44697b8f93411d4f206dac4ac801b66f5030b8486573db13117&quality=80&width=3000",
+                    date: "2025-06-27",
+                    title: "Meta menacée d’amendes quotidiennes si son modèle de consentement publicitaire ne se conforme pas au DMA",
+                    content: "La **Commission européenne** a averti **Meta Platforms** (maison-mère de Facebook et Instagram) qu’elle s’expose à des **sanctions journalières** si elle ne modifie pas suffisamment son modèle “ pay-or-consent ” pour se mettre en conformité avec le *Digital Markets Act* (DMA) de l’UE.\n\n### 📌 Le coeur du problème\n\nDepuis **novembre 2023**, Meta propose aux utilisateurs européens deux options :\n\n1. **Accès gratuit** en acceptant le ciblage publicitaire basé sur leurs données personnelles.\n2. **Option payante**, permettant un service sans publicité ni collecte de données.\n\nCette approche a été jugée **non conforme** au DMA : l’UE réclame une **alternative gratuite** offrant un niveau de service équivalent sans recourir aux données personnelles .\n\n### ⚖️ Sanctions déjà appliquées\n\nEn **avril 2025**, la Commission a infligé une **amende de 200 M€** pour la période allant de mars 2024 à novembre 2024, estimant que le modèle initial viole le DMA . Meta a ensuite ajusté son système pour limiter l’usage des données personnelles.\n\n### ⏳ Amendes journalières en jeu\n\nLe 27 juin 2025, la Commission a mis en garde : si les **modifications** apportées par Meta ne sont pas jugées satisfaisantes, elle pourra imposer des **astreintes quotidiennes** à partir de cette date, pouvant atteindre jusqu’à **5 % du chiffre d’affaires journalier mondial** de Meta .\n\n### 🧭 Réponse de Meta\n\nMeta dénonce un traitement **di scriminatoire** : selon elle, son modèle dépasse les exigences réglementaires et reflète une pression excessive sur l’innovation en Europe . Le groupe affirme :\n\n> « Un choix utilisateur entre un abonnement sans pub et un service financé par la pub reste un modèle commercial légitime… Nous sommes convaincus que notre gamme de choix va au‑delà de ce que les règles de l’UE exigent » .\n\n### 🔍 Ce qu'il reste à faire\n\nActuellement, la Commission évalue les **récentes modifications** du modèle introduites en novembre 2024. Elle doit déterminer si elles répondent adéquatement aux exigences du DMA.\n\n* **Si elles sont jugées conformes** → Meta pourra éviter les amendes journalières.\n* **Sinon** → la Commission activitera les astreintes à compter du **27 juin 2025**, avec des amendes potentiellement colossales .\n\n---\n\n### 💡 En résumé\n\n* **Modèle “pay-or-consent”** jugé non conforme au DMA.\n* **Amende de 200 M€** déjà appliquée en avril 2025.\n* **Avertissement de sanctions quotidiennes** jusqu’à 5 % du CA global si non-conformité confirmée.\n* **Meta se défend**, juge ces mesures injustifiées et nuisant à l’innovation.\n\n---\n\nLa balle est désormais dans le camp de Meta : ses ajustements devront convaincre la Commission avant que les **astreintes journalières** ne soient appliquées. Une bataille juridique et réglementaire à suivre de près."
+                },
+                {
+                    image: "https://www.politico.eu/cdn-cgi/image/width%3D1160%2Cheight%3D773%2Cquality%3D80%2Conerror%3Dredirect%2Cformat%3Dauto/wp-content/uploads/2025/06/26/GettyImages-1234046115-scaled.jpg",
+                    date: "2025-06-27",
+                    title: "Apple revoit l’App Store en Europe pour éviter de nouvelles amendes",
+                    content: "Apple vient de déploye r des **changements majeurs** dans les règles de l’App Store européen afin de se conformer à l’**Digital Markets Act** (DMA) de l’Union européenne et d’éviter de nouvelles pénalités financières. En avril dernier, l’entreprise avait été sanctionnée d’une amende d’environ **500 M €** (environ 585 M \$) pour avoir empêché les développeurs de diriger les utilisateurs vers des moyens de paiement externes .\n\n2. **Nouvelle structure de frais à plusieurs niveaux**\n\n   * Les achats via l’App Store : commission de base **20 %**, réduite à **13 %** pour les petites entreprises .\n   * Paiements externes : frais compris entre **5 % et 15 %**, au lieu de l’ancienne redevance fixe de 0,50 € par téléchargement .\n   * Commission “Core Technology” supplémentaire de **5 %** sur les transactions hors App Store .\n\n### 💡 Motivations & réactions\n\nCes mesures visent à **éviter des amendes journalières pouvant atteindre 50 M €/jour** prévues par la DMA . Apple insiste sur le fait qu’elle **conteste toujours la décision de la Commission** et déposera un recours légal .\n\nDe leur côté, les **développeurs et concurrents** (Spotify, Epic…) jugent les changements **insuffisants** :\n\n* **Tim Sweeney** (Epic) qualifie ces ajustements de moquerie de la concurrence loyale, arguant que les nouvelles commissions maintiennent des **handicaps importants** pour les options alternatives .\n* **Spotify** avait déjà retiré ses paiements intégrés pour éviter la commission de 30 %, et espère des règles plus ouvertes .\n\n### 🧭 Prochaines étapes\n\n* **Fin de l’échéance ( 26 juin)** : Apple disposait de 60 jours pour se conformer à la DMA et éviter les pénalités journalières .\n* **Révision par la Commission** : Bruxelles examine désormais la conformité de ces modifications et appelle les acteurs du marché à donner leur avis avant décision finale .\n* **Recours juridique** : Apple poursuivra sa contestation devant les tribunaux, tout en mettant en place ces réformes .\n\n---\n\n### 📌 Résumé\n\nApple opère un **tournant stratégique** en Europe : elle ouvre l’accès à des paiements externes, crée un système de frais modulable, tout en affirmant contester la légitimité de la mesure. Reste à voir si cette réforme satisfera les exigences de la DMA e"
+                },
+                {
+                    image: "https://hips.hearstapps.com/hmg-prod/images/gettyimages-2222468413-1-685ed100131a5.jpg?crop=0.668xw%3A1.00xh%3B0.216xw%2C0&resize=640%3A%2A",
+                    date: "2025-06-27",
+                    title: "Mariage de Jeff Bezos à Venise : entre faste, polémique et canicule",
+                    content: "Venise a été sous les projecteurs mondiaux du 25 au 29 juin 2025, lors du somptueux mariage de Jeff Bezos et Lauren Sánchez. Organisé initialement à la Scuola Grande della Misericordia, l'événement a été déplacé à l’Arsenale, plus isolé, après des menaces de perturbation massives par des activistes — y compris la possible présence de crocodiles gonflables dans les canaux .\n\n### 🎯 Un mariage de plusieurs dizaines de millions\n\nLe coût total dépasse les 40 millions d’euros (certaines sources évoquent jusqu’à 50 M€) pour cette célébration sur trois jours, avec la présence de 200 à 250 invités parmi lesquels Oprah Winfrey, Kim Kardashian, Leonardo DiCaprio, Bill Gates ou la reine Rania de Jordanie .\n\n### ☀️ Organisé en pleine canicule\n\nLe mariage a coïncidé avec une intense vague de chaleur survenue en Europe méridionale, avec des températures au-delà de 40 °C, provoquant des alertes météo et une inquiétude quant aux impacts sanitaires et environnementaux à Venise .\n\n### 📍 Déplacement stratégique du lieu\n\nInitialement prévu au coeur de la cité historique, l’événement a été transféré à l’Arsenale afin de réduire les perturbations liées à la sécurité et aux protestations. Le méga-yacht de Bezos, le « Koru », ainsi que son navire administratif, sont restés au large, hors de la lagune .\n\n### 🔥 Contestations et mobilisation citoyenne\n\n* Le collectif “No Space for Bezos” a arboré banderoles, autocollants et slogans (“Venise n’est pas à vendre”, “Pas de place pour Bezos”), dénonçant la privatisation d’un espace déjà exsangue et surtaxé par le tourisme de masse .\n* Greenpeace a déployé une banderole à la place Saint-Marc, demandant plus de contributions fiscales de la part de milliardaires .\n* Certains militants ont menacé de bloquer les rues et les canaux, non seulement pour manifester, mais aussi par mesure de sécurité, ce qui a conduit les organisateurs à modifier les plans .\n\n### 🤝 Réaction des autorités : enjeux économiques et sécuritaires\n\nLes autorités locales, dont le maire Luigi Brugnaro, ont mis l’accent sur les retombées économiques, estimées à près d’un milliard d’euros en visibilité et consommation touristique . Des gestes symboliques accompagnent l'événement : sur €3 millions de dons d’entreprises vers des ONG locales (dont UNESCO, CORILA, université de Venise), plus un million d’\n\n### 💭 Conclusion : Venise face à ses contradictions\n\nCe mariage planétaire cristallise les tensions vénitiennes : entre la nécessité d’un tourisme haut de gamme pour financer le patrimoine et la colère montante face à une ville désertée de ses habitants et saturée par un tourisme aveugle. La symbolique d’un tel événement en période de crise climatique et de canicule renforce le débat : jusqu’où la Sérénissime peut-elle vendre son âme pour un jour de luxe?"
+                },
+                {
+                    image: "https://cdn.pixabay.com/photo/2022/03/14/12/50/eu-flag-7068136_960_720.jpg",
+                    date: "2025-06-27",
+                    title: "« 40 ans de l'emblème européen : la montée du drapeau à douze étoiles, symbole d’unité et de stabilité »",
+                    content: "En ce **27 juin 2025**, l’Union européenne célèbre le **40ᵉ anniversaire** du drapeau européen, cet emblème immédiatement reconnaissable orné de **douze étoiles dorées sur fond bleu**, symbole profondément enraciné dans l’histoire et la conscience collective des Européens .\n\n### L’origine d’un symbole\n\nCréé en **1955** par le Conseil de l’Europe, le drapeau répondait à un besoin : celui d’un symbole fédérateur, porteur d’universalité, d’harmonie et d’intemporalité, capable de dépasser les différences nationales .\nCe ne sont pas **douze** États membres qui inspirèrent le nombre d’étoiles, mais plutôt la symbolique du chiffre : la **perfection, la stabilité, la plénitude**. Le cercle, quant à lui, représente l’unité .\n\n### Adoption par l’Union européenne\n\nEn **1983**, le Parlement européen recommandait officiellement le drapeau aux Communautés européennes. Deux ans plus tard, le **Conseil européen** entérinait cette recommandation – et le drapeau devenait l’**émblème officiel** des Communautés, puis de l’Union .\n\n### Un symbole puissant et universel\n\nAujourd’hui, ce drapeau flotte non seulement devant les institutions européennes, mais aussi sur les **écoles, les municipalités, les passeports et les plaques d’immatriculation** . Il véhicule des valeurs partagées : **liberté, démocratie, droits de l’homme, paix et sécurité** .\n\nLe **2025** marque un double anniversaire : **40 ans** non seulement du drapeau, mais aussi de l’adoption de l’**« Ode à la Joie »**, Hymne européen sans paroles, qui incarne ces mêmes aspirations communes à travers la musique .\n\n### Pourquoi ce symbole reste pertinent aujourd’hui\n\nAlors que l’Europe traverse des crises – géopolitiques, migratoires, économiques – le drapeau à douze étoiles reste un **repère stable**, un rappel visuel que l’unité européenne demeure. Il est **intemporel**, ne dépend pas du nombre d’États membres, et **traverse les générations** .\n\nIl est aussi devenu un symbole **militant**, repris par les citoyens et les mouvements civiques à travers l’Europe, dans la lutte pour leurs droits fondamentaux, la démocratie et l’État de droit .\n\n---\n\n### 🎉 En résumé\n\n* **1955** : adoption initiale par le Conseil de l’Europe.\n* **1983–1985** : adoption officielle par les Communautés européennes, puis l’UE.\n* **2025** : quarante ans d’histoire, incarnant des valeurs toujours actuelles : **unité, stabilité, solidarité, démocratie**.\n\nEn ce **27 juin**, l’Europe peut regarder ce symbole fièrement, comme le reflet d’un projet qui continue d’exister malgré les défis. Le drapeau européen est plus qu’un dessin : il est une promesse de **solidarité** et d’**espoir collectif**."
+                },
+                {
+                    image: "https://cdn-az.allevents.in/events3/banners/36d1d1d205fa13d14ac62e8f6d418ac2c92f42318fd6ef0ec870b520c148adea-rimg-w1080-h1350-dc293214-gmir?v=1751007015",
+                    date: "2025-06-27",
+                    title: "Finale U21 Euro 2025 : Angleterre – Allemagne dimanche 28 juin à Bratislava – les Young Lions défendent leur titre",
+                    content: "**Bratislava – 27 juin 2025** – Le coup d’envoi de la grande finale de l’Euro U21 sera donné ce **dimanche 28 juin à 21 h CET** au Štadión Tehelné Pole de Bratislava, avec un duel de prestige entre l’**Angleterre** et l’**Allemagne**, deux nations au riche palmarès chez les jeunes .\n\n### 🔥 Enjeux & Contexte\n\n* **L’Angleterre**, championne en titre (2023), ambitionne un doublé historique, un exploit jamais vu depuis l’Espagne en 2013 . Malgré un début hésitant en phase de poules (1 victoire, 1 nul, 1 défaite contre l’Allemagne), les Young \n* **L’Allemagne** présente un parcours irréprochable : **5 victoires en 5 matchs**, 15 buts inscrits, 0 encaissé dans les phases finales, invaincue depuis 20 matchs . Le buteur phénomène **Nick Woltemade**, avec 6 réalisations et 3 passes décisives, domine les débats .\n\n### ⚔️ Les forces en présence\n\n* **Angleterre** : Ballon contrôlé (58,6 % de possession, 89,6 % de passes réussies), créativité avec Omari Hutchinson comme dynamiteur (24 dribbles, le plus du tournoi), et efficacité retrouvée en phases décisives .\n* **Allemagne** : Puissance offensive, excellent ratio de tirs (20 % de conversion) et solides statistiques défensives. Leur suprématie se confirme lors de la demi-finale 3‑0 face à la France (buts Woltemade, Weiper, Gruda) .\n\n### ⚖️ Duels clés\n\n* **Elliott vs Woltemade** : le match des artilleurs. Elliott a mis fin au suspense face aux Pays‑Bas, tandis que Woltemade est le grand favori au Soulier d’or .\n* **Historique Angleterre‑Allemagne** : 3 finales U21 déjà jouées—1982 (victoire angleterre), 2009 (victoire allemande), et voilà 2025. L’Allemagne s’était imposée 4‑0 en 2009 et 2‑1 en phase de poules actuelles .\n* **Borders tactiques** : chez les Anglais, Lee Carsley mise sur la cohésion et l’animation collective ; côté allemand, Antonio Di Salvo cultive l’efficacité tranchante et le pressing destructeur .\n\n### 🖥️ Où suivre la finale ?\n\n* **Royaume‑Uni / Irlan de** : diffusion gratuite sur **Channel 4** (à partir de 20h UK) ou **UEFA.tv** en streaming .\n* **France** : suivi possible via les plateformes UEFA ou réseaux partenaires (non détaillé).\n* **Républiques ailleurs** : chaînes internationales, plateformes VIX (USA, à 4,99 \$ par mois), ou recours au VPN recommandé .\n\n### 💭 Cités & Prédictions\n\n* Les médias s’attendent à un **finale disputée, riche en buts**, avec une légère préférence pour l’Angleterre .\n* Prédictions communes : score de 2‑1 (en faveur de l’Angleterre) ou match nul tendu suivi de tirs au but .\n\n---\n\n### ✅ Verdict\n\nLa finale de l’Euro U21 2025 réserve un affrontement passionnant : **l’Angleterre**, tenante du titre, défie une **Allemagne invincible**, portée par ses statistiques impressionnantes et un Nick Woltemade en mode machine à buts. L’enjeu historique, la jeunesse et le talent en font un rendez-vous à ne pas manquer.\n\n**Rendez-vous dimanche à 21 h CET**, sur la pelouse de Bratislava, pour savoir si les Young Lions prendront une nouvelle couronne… ou si Die Mannschaft les privent de leur rêve."
+                }
+            ],
+            monde: [
+                {
+                    image: "https://understandingwar.org/sites/default/files/Israeli%20Claims%20Iran%20June%2013%2C%202025.png",
+                    date: "2025-06-27",
+                    title: "Israël frappe le Hezbollah ; l’ONU évalue les dégâts sur les sites nucléaires iraniens, Khamenei alerte Washington",
+                    content: "### Contexte régional et militaire\n\nDimanche 27 juin 2025, les FDI (Forces de défense israéliennes) ont mené des frappes ciblées contre des positions du Hezbollah dans le sud du Liban. Un drone israélien a notamment visé un site de commandement à Nabatiyé, causant la mort d’une femme et faisant environ 20 blessés dans un immeuble voisin, selon les autorités libanaises . Un porte‑parole du ministère iranien des Affaires étrangères a affirmé que l’évaluation détaillée menée par l’ONU pourrait prendre plusieurs jours, voire plusieurs semaines, en raison des restrictions imposées par les autorités iraniennes . Le Guide suprême a qualifié ces frappes de surmédiatisées, réaffirmant que l’Iran ne restera pas inactif en cas de nouvelles incursions.\n\n### Risques d’escalade\n\nCette offensive israélienne contre le Hezbollah, combinée à l’évaluation onusienne en cours des dégâts subis par les sites nucléaires iraniens, alimente un climat de crise aiguë. Le dernier avertissement de Khamenei contre toute nouvelle intervention militaire américaine pèse lourdement sur un équilibre déjà fragile. Le risque d’une escalade régionale, avec des ripostes iraniennes ou une réponse internationale, est désormais au centre des inquiétudes diplomatiques.\n\n---\n\n### En résumé :\n\n* **Israël** a bombardé des positions du **Hezbollah** au Liban, faisant au moins un mort et une vingtaine de blessés .\n* L’**ONU** est appelée à estimer les **dégâts sur les sites nucléaires iraniens** — Natanz, Fordo, Ispahan — jugés « importants » par Téhéran .\n* L’**ayatollah Khamenei** avertit que de nouvelles frappes américaines déclencheraient une **réponse ferme** de la part de l’Iran ."
+                },
+                {
+                    image: "https://responsiblestatecraft.org/media-library/image.jpg?coordinates=0%2C67%2C0%2C869&height=600&id=53811009&width=1200",
+                    date: "2025-06-27",
+                    title: "« Opération Narnia » : le rapport du Wall Street Journal révèle des frappes israélo‑américaines coordonnées en Iran",
+                    content: "**Un rapport explosif du *Wall Street Journal* détaille pour la première fois les coulisses d’**Opération Narnia**, une offensive militaire conjointe entre Israël et les États-Unis contre l’Iran, menée au cœur de juin 2025. Cette opération visait principalement les hauts gradés et scientifiques proches du programme nucléaire iranien.\n\n### 🎯 Une opération planifiée depuis des années\n\nSelon le *WSJ*, la planification remonterait aux années 1990 : Israël a patiemment développé un réseau d’espions en Iran, constitué des caches pour drones clandestins et rassemblé une base de données sur les cibles potentielles . Dès novembre 2024, 120 hauts responsables militaires et du renseignement israéliens ont établi une liste de plus de 250 cibles – scientifiques, officiers et structures nucléaires .\n\n### 🕵️‍♂️ Opérations d’intoxication et subterfuge\n\nPour garantir l’effe t de surprise, une série de feintes furent orchestrées :\n\n* Netanyahu simule un congé familial juste avant la frappe,\n* fuite délibérée sur des désaccords avec les US,\n* communication publique sur un accord diplomatique imminent,\n* tweets pro-diplomatiques de Trump au moment des attaques .\n\n### 💥 Frappes synchronisées et résultats spectaculaires\n\nDans la nuit du 13 juin, l’opération débute par la « Red Wedding » : les avions israéliens éliminent simultanément plusieurs généraux iraniens à Téhéran . Simultanément s’engage **Opération Narnia** : neuf scientifiques nucléaires sont tués dans leurs domiciles, en une manœuvre aussi rapide qu’imprévisible .\n\nQuelques jours plus tard, les États-Unis frappent trois sites nucléaires (Fordow, Natanz, Ispahan) avec des bombes GBU‑57 et des missiles Tomahawks, neutralisant partiellement les capacités d’enrichissement iraniennes . D’après le chef d’état-major israélien, ces frappes américaines étaient « très précises, impressionnantes » et constituaient un « tournant » dans la campagne .\n\n### 🗺️ Conséquences et zones d’ombre\n\nLes opérations auraient considérablement retar dé le programme nucléaire iranien – stoppant temporairement l’enrichissement à 90 % – mais leur impact à long terme reste contesté .\n\nPolitiquement, le coup de force renforce la position de Netanyahu et pourrait influencer le paysage diplomatique régional, en faveur de rapprochements entre Israël et certains États arabes . Cependant, le risque d’une spirale de représailles iraniennes e\n\nDe plus, des éléments légaux et éthiques soulèvent un débat : certains juristes estiment que viser des scientifiques liés à un programme militaire est compatible avec le droit de la guerre, mais la frontière entre civils et militaires reste discutée .\n\n---\n\n### 🔎 En résumé\n\n* **Opération Narnia** a été lancée dans la nuit du 13 juin 2025, ciblant les têtes du programme nucléaire iranien.\n* Elle s’inscrit dans une vaste stratégie combinant espionnage, déceptions, frappes aériennes israéliennes et bombardements américains.\n* Si l’effet tactique a été rapide et spectaculaire, le véritable impact stratégique à moyen terme reste incertain.\n\nLes prochains mois seront décisifs pour savoir si cette coalition réussira à contenir durablement les ambitions nucléaires iraniennes — ou si elle alimentera un nouvel engrenage militaire."
+                },
+                {
+                    image: "https://www.atlanticcouncil.org/wp-content/uploads/2025/05/2025-05-16T100616Z_389663770_RC2QIEA4HDNH_RTRMADP_3_UKRAINE-CRISIS-EAST-FRONTLINE-scaled.jpg",
+                    date: "2025-06-27",
+                    title: "Échange de tirs en Ukraine : la Russie frappe, avec un avertissement d’une offensive estivale",
+                    content: "Alors même que la guerre en Ukraine entre dans son quatrième été, les tensions s’intensifient :\n\n**1. Une nouvelle vague d’attaques massives**\nDans la nuit du 26 au 27 juin, la Russie a mené une offensive aérienne d’envergure, mobilisant 363 drones (dont des leurres) ainsi que deux missiles hypersoniques Kinjal et six missiles de croisière Kalibr, notamment sur la base aérienne de Starokostiantyni\n\n**2. Bilan humain lourd et front toujours instable**\nLes frappes ont fait plusieurs morts et blessés dans différentes régions : à Samar (oblast de Dnipropetrovsk), la Russie aurait tué au moins cinq civils et blessé plus de 20 autres . Sur le front de Pokrovsk, selon le général Syrsky, les combats sont réguliers, avec « pas moins de 50 affrontements chaque jour », en raison du déploiement d’environ 111 000 soldats russes .\n\n**3. Une offensive estivale annoncée**\nLes autorités russes ont laissé entendre qu’une opération d’envergure pourrait se profiler durant l’été, marquant un passage à une phase plus offensive. Cette stratégie s’inscrit dans une campagne prolongée – combinant frappes massives et pression sur la ligne de front – pour tester la résistance ukrainienne .\n\n**4. Vers une escalade dangereuse ?**\nFace à la multiplication des frappes, l’Ukraine réclame davantage de systèmes de défense (notamment Patriot), tandis que l’Union européenne et l’OTAN renforcent leurs alertes. Le chef de la diplomatie européenne a mis en garde contre des « plans d’agression à long terme » de Moscou, tandis que l’OTAN soulève le risque que la Russie puisse menacer un allié dans un futur proche .\n\n---\n\n### 🔍 Analyse de la situation\n\n* Les attaques nocturnes coordonnées, combinant drones, missiles hypersoniques et missiles de croisière, témoignent d’une volonté russe de saturer les défenses ukrainiennes et de briser le moral des populations.\n* L’annonce d’une offensive estivale signale une possible escalade, davantage axée sur l’usure et la démonstration militaire que sur des avancées territoriales significatives.\n* Face à cette menace, la résistance ukrainienne s’appuie sur des livraisons d’armes occidentales et renforce ses défenses, tandis que la pression diplomatique internationale monte.\n\n---\n\nCet affrontement s’inscrit dans une dynamique tragique : une guerre longue, destructrice et incertaine, où chaque été pourrait marquer une nouvelle étape de brutalité."
+                },
+                {
+                    image: "https://www.reuters.com/resizer/v2/6X57VB2XVZLNXOCMTVESB4NHTQ.jpg?auth=edd7097ea8540d65b4f1b66eb774b02fc9c837786f601ae2763644580d45cf66&quality=80&width=5154",
+                    date: "2025-06-27",
+                    title: "Wall Street frôle de nouveaux records : dollar faible, espoir de baisses de taux et enthousiasme pour l’IA",
+                    content: "Alors que la mi‑année 2025 approche, les principaux indices de Wall Street flirtent avec leurs niveaux historiques. Plusieurs moteurs alimentent cette dynamique porteuse :\n\n### 📉 Dollar en baisse :\n\nLe dollar a atteint son plus bas niveau en trois ans, entraîné par des attentes de baisses des taux de la Fed et des inquiétudes sur l’indépendance de la banque centrale . Cette dépréciation du billet vert donne un avantage considérable\n\n### 📊 Perspectives de baisses de taux :\n\nLes marchés misent de plus en plus sur un début d’allègement monétaire de la Fed d’ici septembre, avec un risque même envisagé dès juillet . Les révisions récentes des données économiques – notamment la baisse des dépenses des consommateurs et une inflation sous‑contrôle – confortent cette anticipation .\n\n### 🤝 Apaisement mondial & accords commerciaux :\n\nLe récent accord entre les États-Unis et la Chine sur les exportations de terres rares, ainsi que des efforts pour relancer des discussions commerciales U.S.-UE, ont détendu les tensions tarifaires et rassuré les investisseurs . Dans le même temps, le fragile cesse‑z‑le‑feu au Moyen‑Orient a calmé les craintes autour des prix du pétrole .\n\n### 🤖 Retournement autour de l’intelligence artificielle :\n\nLes valeurs technologiques et, en particulier, les titres liés à l’IA (comme Nvidia et Micron), continuent de soutenir la remontée des indices Nasdaq et S\&P 500 . Nvidia se rapproche même d’une valeur boursière de 4 000 Md \$ .\n\n---\n\n### 📈 Contexte chiffré & ambiance des marchés\n\n* **S\&P 500** : hausse de 20 % depuis les creux d’avril ; proche d’un nouveau record historique (≈ 6 187 pts) .\n* **Nasdaq** : frôle ses sommets, porté par les géants de la tech .\n* **Dollar index** : en recul d’environ 10 % sur l’année, sur le point d’enregistrer sa pire performance semestrielle depuis les années 1970 .\n* **Rendements obligataires** : les taux américains à 2 et 10 ans retombent aux plus bas depuis début mai .\n\n---\n\n### 🎯 Perspectives et risques à surveiller\n\n1. **Données économiques à venir** : le rapport PCE de mai et le marché de l’emploi détermineront la crédibilité des anticipations de politiques monétaires .\n2. **Autres tensions géopolitiques** : la solidité du cesse‑z‑le‑feu oriental et les discussions commerciales restent fragiles, et leurs évolutions pourraient rapidement faire basculer le sentiment .\n3. **Concentration du rallye** : la hausse boursière reste principalement portée par quelques mastodontes technos, laissant de côté une partie du marché (small caps, secteurs cycliques) .\n\n---\n\n### 📝 En synthèse\n\nWall Street est à deux doigts d’un nouveau record historique, porté par un cocktail favorable : dollar faible, anticipation de baisses de taux, désescalade géopolitique et effervescence de l’IA. Toutefois, ces catalyseurs restent fragiles, et l’élan pourrait s’inverser en cas de données économiques décevantes ou de rebond des tensions. Les investisseurs semblent néanmoins prêts à croire dans une fin 2025 plus clémente, entre croissance douce et expansion technologique."
+                },
+                {
+                    image: "https://www.nato.int/nato_static_fl2014/assets/pictures/images_mfu/2024/6/27b-visit-ukr/240627b-005_rdax_775x440s.jpg",
+                    date: "2025-06-27",
+                    title: "Zelenskyy presse l’OTAN d’un engagement plus ferme face à l’invasion russe",
+                    content: "Au sommet de l’OTAN à La Haye du 24 juin 2025, le président ukrainien Volodymyr Zelenskyy a lancé un appel pressant aux Alliés : il demande des investissements massifs dans la défense ukrainienne et un renforcement du soutien militaire pour faire face à l’agression russe.\n\n### 💥 Un secteur de défense en plein essor… mais sous-financé\n\nSelon Zelenskyy, l’industrie de défense ukrainienne, qui produisait environ 1 milliard de dollars d’armements en 2022, a vu ce chiffre s’envoler à 35 milliards \$ cette année . Pourtant, près de 40 % de ce potentiel \n\n### 🎯 Une alliance et des sanctions efficaces\n\nZelenskyy a insisté sur deux axes essentiels :\n\n1. La montée à 5 % du PIB des dépenses militaires de l’OTAN (actuellement à 2 %), afin de soutenir une Europe plus résiliente face à la Russie .\n2. Des sanctions élargies contre les entreprises — y compris européennes — fournissant des composants aux missiles russes. « Chaque pièce livrée contribue à prolonger la guerre », a-t-il averti .\n\n### ⚠️ Avertissement : un danger pour l’Alliance\n\nDevant les responsables de Sky News, il est allé plus loin : si l’augmentation des dépenses de défense à 5 % d’ici 2035 entrait en vigueur trop lentement, cela risque de donner à Vladimir Poutine une « fenêtre de tir » pour menacer directement un pays de l’OTAN dans les cinq prochaines années . Il a ainsi exhorté les Alliés à accélérer les échéances.\n\n### 🔍 Enjeux géopolitiques et dilemmes\n\nCette requête de Zelenskyy intervient dans un contexte complexe :\n\n* Les États-Unis, désormais dirigés par Donald Trump, conditionnent leur soutien. Le président américain a mis l’accent sur la hausse des dépenses militaires alliées, tout en laissant planer un certain flou sur la poursuite de l’aide à Kiev .\n* Sur le Vieux Continent, plusieurs gouvernements européens soutiennent cette montée en puissance, mais doivent trouver le juste équilibre entre sécurité et contraintes budgétaires .\n\n### 📌 Conclusion\n\nVolodymyr Zelenskyy a clairement fixé les axes de sa stratégie : renforcer rapidement les capacités industrielles et militaires ukrainiennes, intensifier les sanctions ciblées, et engager fermement l’OTAN sur une croissance ambitieuse de ses dépenses. Son message est limpide : en temps de guerre, le temps est un luxe que l’Ukra"
+                },
+                {
+                    image: "https://www.reuters.com/resizer/v2/YIFUT3XD4ZNBBPOUJ3ZFL5NGB4.jpg?auth=be816e4302af4433b9515094fd04393426913c8a59db059b8d21f531ffc3b40c&quality=80&width=4000",
+                    date: "2025-06-27",
+                    title: "Échec du Conseil européen : Hongrie et Slovaquie bloquent le 18ᵉ train de sanctions contre la Russie",
+                    content: "À l’issue du sommet du Conseil européen à Bruxelles, réuni le mercredi 26 juin 2025, les dirigeants des 27 États membres n’ont pas réussi à adopter un nouveau train de sanctions – le 18ᵉ – contre la Russie, en raison de l’opposition ferme de la Hongrie et de la Slovaquie.\n\n---\n\n### 🔍 Pourquoi ce blocage ?\n\n* **Objections liées à l’énergie** : Les deux pays, très dépendants du gaz et du pétrole russes, ont lié leur veto à un projet de fin progressive des importations d’énergie russe d’ici 2027 (le plan « RePowerEU »). Ils craignent des hausses tarifaires po\n\n* **Position coordonnée** : Le Premier ministre hongrois Viktor Orbán et son homologue slovaque Robert Fico ont clairement affiché leur solidarité. Orbán a affirmé que les deux pays faisaient « une seule équipe » pour préserver leur sécurité énergétique .\n\n---\n\n### ✅ Ce qui a été adopté\n\nMalgré cet échec, les dirigeants ont décidé à l’unanimité de prolonger les sanctions déjà en place pour six mois, jusqu’à début 2026. Ces mesures couvrent notamment le gel d’avoirs, les restrictions bancaires, technologiques, industrielles et la surveillance du « shadow fleet » russe .\n\n---\n\n### ⚠️ Conséquences et suite\n\n* **Pression sur Bruxelles** : La Commission européenne, représentée par Ursula von der Leyen, s’est engagée à trouver un accord « **bientôt** » et à poursuivre l’élaboration d’un 18ᵉ paquet, tout en explorant d’autres outils (ex. interdiction des nouveaux contrats gaziers) pour contourner les veto .\n\n* **Soutien à l'Ukraine** : Lors du sommet, les dirigeants ont confirmé leur soutien à l’Ukraine, également sur le plan militaire et diplomatique : renforcement des systèmes de défense, encouragement du processus d’adhésion à l’UE et poursuite des échanges sur Gaza .\n\n---\n\n### 🧭 En résumé\n\n| Points clés        | Détails                                                                                |\n| ------------------ | ------------------------------------------------------------------------------------- |\n| **Blocage**        | Hongrie & Slovaquie opposées au train de sanctions n°18                               |\n| **Motivations**    | Préservation de leur approvisionnement énergétique, protection des intérêts nationaux |\n| **Résultats**      | Aucun nouveau train adopté, mais prolongation des sanctions en vigueur jusqu’en 2026  |\n| **Pistes futures** | Nouvelles discussions, alternatives légales aux sanctions, recours au plan RePowerEU  |\n\n---\n\n**Conclusion** : Le Conseil européen affiche une nouvelle fracture au sein de l’Union alors que la guerre en Ukraine progresse. Tandis que certains États membres cherchent à durcir les mesures contre Moscou, d’autres plaident pour la prudence face à l’impact économique intérieur. La solution pourrait venir d’un compromis énergétique – potentiellement un fonds d’aide pour les pays dépendants – ou d’un nouveau mécanisme législatif adossé au commerce européen."
+                },
+                {
+                    image: "https://www.reuters.com/resizer/v2/Q7ERTKMCINNCROTYXX6FE7YQ44.jpg?auth=88964b604fd38f8fc5603ae7bdd918a54ceba9655ce5338bc6e14e4966ce8e40&quality=80&width=1080",
+                    date: "2025-06-27",
+                    title: "Allemagne : suspension temporaire du regroupement familial pour les migrants bénéficiant de la protection subsidiaire jusqu’en 2027",
+                    content: "**Berlin, le 27 juin 2025** – Le Bundestag a adopté ce vendredi un projet de loi majeur visant à suspendre le regroupement familial pour les migrants bénéficiant de la protection subsidiaire, pour une période initiale de deux ans, c’est‑à‑dire jusqu’en 2027. Le texte, voté à une large majorité de 444 voix contre 135, s’inscrit dans la stratégie migratoire ferme d\n\n### 🔍 Enjeux de la mesure\n\n* **Qui est concerné ?** Environ 388 000 migrants, principalement originaires de Syrie, disposant d’un statut de protection subsidiaire – un statut intermédiaire qui ne leur permet pas d’obtenir l’asile complet – voient désormais le droit de faire venir conjoint et enfants suspendu .\n* **Portée de la mesure :** Jusqu’à présent, un quota de 1 000 visas mensuels permettait à ces migrants de réussir un regroupement familial limité. Le nouveau texte supprime totalement cette possibilité sauf en cas « exceptionnel » .\n* **Motivations du gouvernement :** Le ministre de l’Intérieur Alexander Dobrindt justifie ce décret par la volonté de limiter le « facteur d’attraction » généré par les départs familiaux, de briser les réseaux de passeurs et de soulager les capacités d'accueil des communes, notamment les logements, les écoles et les structures de garde d’enfants .\n\n### ⚖️ Réactions politiques et implications\n\n* **Opposition et ONG :** Les partis libéraux et la gauche dénoncent une attaque contre la valeur familiale et la cohésion sociale, affirmant que la mesure nuit à l'intégration. L’association Pro Asyl envisage d’attaquer la constitutionnalité du texte .\n* **Blocage parlementaire à venir :** Le texte doit encore passer au Bundesrat, la chambre haute, avant sa promulgation attendue en juillet .\n* **Conséquences humaines :** Des récits poignants émergent, à l’image d’Ahmad Shikh Ali, dont le regroupement familial imminent vient d’être bloqué : « Depuis que j’ai appris cette décision, je ne dors plus… Mon fils rampait à mon départ, il marche aujourd’hui » .\n\n### 🔮 Perspectives\n\n* **Durée et révision :** L’application de la suspension est initialement fixée à deux ans. À son terme, une réévaluation sera engagée pour décider de sa prolongation ou de son assouplissement .\n* **Contexte européen :** La mesure intervient dans un contexte où d'autres catégories de réfugiés – notamment ukrainiens – peuvent bénéficier d’une réunification familiale sans restrictions, soulevant un débat sur les inégalités de traitement ([eudivers\n* **Recours juridique :** Plusieurs acteurs s’interrogent sur la conformité de cette suspension avec le droit allemand (articles constitutionnels protégeant la famille) et le droit européen (directive sur le regroupement familial). Le Conseil constitutionnel et la Cour européenne des droits de l’homme pourraient ultimement être saisis .\n\n---\n\n### ✍️ En résumé\n\nLe gouvernement Merz met en œuvre une politique migratoire de rupture en suspendant pour deux ans le droit au regroupement familial des titulaires de la protection subsidiaire, conformément à ses promesses électorales. Cette décision, adoptée à une large majorité au Bundestag, suscite de vives critiques politiques et juridiques, et pourrait bientôt faire l’objet de recours. Reste à voir si le Bundesrat validera le texte en juillet et combien dureront réellement ces restrictions."
+                },
+                {
+                    image: "https://www.reuters.com/resizer/v2/E57GWXFYO5L3FKCUUW4O4D2ZBM.jpg?auth=ed38d054199993e4b1d8f20abfa0f25dc7335530c994c6da97e50aa85d019d60",
+                    date: "2025-06-27",
+                    title: "La Cour Suprême des États‑Unis réduit la portée des injonctions fédérales : qualifiée de « victoire monumentale » par Trump",
+                    content: "**Washington, 27 juin 2025** – Ce vendredi, la Cour Suprême des États‑Unis a renforcé la séparation des pouvoirs en limitant la capacité des juges fédéraux à délivrer des injonctions ayant effet sur l'ensemble du pays. Cette décision s'accompagne d'un écho retentissant dans la sphère politique, notamment saluée par l’ancien président Donald Trump comme une victoire monumen\n\n### 🔍 Contexte et contenu de la décision\n\nLors de l’affaire ***Trump v. CASA, Inc.***, la Cour a statué à 6‑3 que les injonctions à portée nationale — souvent utilisées pour bloquer des politiques fédérales à grande échelle — dépassent généralement l’autorité que le Congrès accorde aux tribunaux fédéraux .\n\n* Rédigée par la juge Amy Coney Barrett, l’opinion insiste sur le fait que les tribunaux ne peuvent accorder qu’un soulagement complet aux plaignants concernés. Toute injonction universelle exigeant un effet étendu irait au-delà des prérogatives judiciaires .\n* La décision ne remet toutefois pas en cause la constitutionnalité des mesures, notamment concernant la citoyenneté à la naissance, mais invite les tribunaux de fond à réévaluer la portée des injonctions en cours .\n\n### 🎯 Conséquences pour l'administration Trump\n\nCette décision intervient dans le cadre du décret controversé signé en janvier dernier, visant à limiter la citoyenneté automatique pour les enfants nés aux États‑Unis de parents non citoyens — une politique affectant environ 150 000 à 255 000 naissances chaque année .\n\n* Jusqu’à présent, plusieurs tribunaux fédéraux avaient émis des injonctions nationales bloquant ce décret. La décision de la Cour Suprême oblige à restreindre ces injonctions aux seuls plaignants, mais interrompt l’application du décret pour 30 jours, laissant le temps à la justice de trancher .\n\n### 🗣️ Réactions contrastées\n\n* **Donald Trump ** a salué la décision comme une victoire monumentale pour la Constitution, la séparation des pouvoirs et l’état de droit .\n* **Pam Bondi**, ancienne procureure générale, a affirmé que cela met un terme à ce qu’elle a qualifié de juges voyous bloquant les politiques de Trump à travers le pays .\n* **Sonia Sotomayor**, dissidente, met en garde : « Aucun droit n’est désormais protégé dans ce nouveau régime juridique » et dénonce la perte d’un recours central pour préserver des droits constitutionnels .\n\n### ⚖️ Enjeux démocratiques et judiciaires\n\n* Les défenseurs des droits civiques expriment des craintes de droit hétérogène selon les juridictions, créant une inégalité de traitement selon la région .\n* Les états opposés à Trump pourraient recourir à des **actions de classe**, bien que ces procédures soient plus complexes à obtenir .\n* Les experts juridiques soulignent que la Cour n’a pas interdit les injonctions nationales, mais en a restreint le champ ; une injonction qui fournit un soulagement complet à l’ensemble des parties impliquées pourrait encore être envisageable .\n\n---\n\n### 📝 En résumé\n\n1. **Réforme majeure de la justice fédérale** : les juges ne pourront plus bloquer des politiques à l’échelle nationale au profit d’un seul plaignant.\n2. **Victoire stratégique pour Trump**, mais la question de la citoyenneté à la naissance reste ouverte.\n3. **Réactions divisées** : certains applaudissent la décision au nom de la séparation des pouvoirs, d'autres y voient une menace pour les droits constitutionnels."
+                },
+                {
+                    image: "https://npr.brightspotcdn.com/dims4/default/a33f875/2147483647/strip/true/crop/5617x4213%2B0%2B0/resize/880x660%21/quality/90/?url=https%3A%2F%2Fnpr.brightspotcdn.com%2Fdims3%2Fdefault%2Fstrip%2Ffalse%2Fcrop%2F5617x4213+655+0%2Fresize%2F5617x4213%21%2F%3Furl%3Dhttp%3A%2F%2Fnpr-brightspot.s3.amazonaws.com%2F21%2F6f%2F9b37acec4b12b645c19f8e7a9945%2Fgettyimages-2222145652.jpg",
+                    date: "2025-06-27",
+                    title: "“Mariage ultra‑luxe à Venise : Bezos et Sánchez face à la controverse caniculaire et aux critiques locales”",
+                    content: "Un mariage hors norme, célébré avec faste, mais confronté à de nombreux questionnements.\n\n---\n\n### 🎉 Une cérémonie somptueuse au cœur de la Sérénissime\n\nLe fondateur d’Amazon, **Jeff Bezos**, et la journaliste **Lauren Sánchez** ont célébré leur union lors d’une cérémonie luxueuse sur l’île de San Giorgio Maggiore, dans la lagune vénitienne. La robe de la mariée, réalisée sur mesure \n\nPlusieurs soirées succèdent à l’événement principal : la première dans les cloîtres de la Madonna dell’Orto, suivie d’un bal pyjama, d’une “foam party” sur le yacht de Bezos évalué à 500 M\$ et enfin la réception dans l’Arsenale décoré de 80 000 roses – pour un coût estimé entre 40 et 50 M€.\n\nLe couple a invité environ 200 à 250 convives, parmi lesquels des figures comme Oprah Winfrey, Leonardo DiCaprio, Kim Kardashian, Tom Brady ou Ivanka Trump.\n\n---\n\n### 🌡️ Une canicule préoccupante\n\nLa cérémonie s’est déroulée  dans un contexte de chaleur extrême. Les températures vénitiennes en cette fin juin ont suscité des inquiétudes, tant pour le confort des invités que pour le personnel et les résidents. Bien que les organisateurs assurent avoir prévu des aménagements (zones ombragées, brumisateurs), la canicule persistante incite à s’interroger sur l’opportunité d’un événement si somptueux en plein été méditerranéen.\n\n---\n\n### 🚫 Protestations et mobilisation citoyenne\n\nEn parallèle de l’effervescence médiatique, des mouvements locaux se sont fortement mobilisés :\n\n* Le collectif **“No Space for Bezos”**, soutenu par plusieurs associations environnementales et de logement, a organisé des manifestations : banderoles anti-Bezos dans des lieux emblématiques, lâcher d’un mannequin dans le Grand Canal….\n* Les motifs de protestation couvrent une gamme étendue : inégalités criantes, privatisation de l’espace public, empreinte carbone liée aux nombreux jets privés et yachts, et absence de bénéfices tangibles pour les habitants.\n* Les organisateurs ont finalement déplacé une des soirées du Cannaregio à l’Arsenale, jugée plus sécurisée et moins vulnérable aux protestations actives comme le blocage de canaux.\n\n---\n\n### 📈 Atouts et retombées économiques\n\nLa mairie et les autorités régionales défendent fermement l’événement :\n\n* Le maire Luigi Brugnaro considère le mariage comme une **vitrine mondiale** pour Venise, promettant des retombées économiques substantielles.\n* Les adeptes du luxe local se montrent enthousiastes : hôtels, traiteurs, chauffeurs de vaporetto, artisans – tous attendent une mise en lumière internationale et un afflux de revenus.\n\nDe plus, Bezos et Sánchez ont fait des **dons à des associations locales**, notamment Corila, UNESCO Venise ou l’Université internationale de Venise, et ont demandé à leurs invités de verser des contributions à ces mêmes causes au lieu de cadeaux traditionnels.\n\n---\n\n### 👥 Vers un bilan mitigé\n\n| Aspect     | Points forts                                     | Points de tension  |\n| ---------- | ------------------------------------------------ | --------------------------------------------------------- |\n| Médiatique | Visibilité planétaire                            | Risque d’image négative (privatisation, inégalités)       |\n| Économique | Apport pour l’hôtellerie, restauration, artisans | Coût carbone, impact sur la vie quotidienne des résidents |\n| Social     | Dons philanthropiques, solidarité locale         | Sentiment d'exclusion et mise à l’écart des Vénitiens     |\n| Climatique | Engagements concrets ?                           | Usage intensif de jets et yachts, canicule sévère         |\n\n---\n\n### 📝 Conclusion\n\nLe mariage **Bezos–Sánchez** à Venise est une manifestation spectaculaire du mariage entre richesse, célébrité et patrimoine mondial. Il met en lumière la tension, presque irréconciliable, entre luxe et responsabilité environnementale/sociale. Si certains célèbrent l'événement comme une **opportunité économique et culturelle**, d'autres le dénoncent comme un symbole de **gentrification, d’inégalités et de maltraitance climatique**."
+                },
+                {
+                    image: "https://static.sociofyme.com/thumb/msid-151125395%2Cresizemode-4%2Cheight-900%2Cwidth-1200%2Cimglength-1502395.jpg",
+                    date: "2025-06-27",
+                    title: "Miss Supranational 2025 : un couronnement historique aujourd’hui en Pologne",
+                    content: "**Nowy Sącz (Pologne), 27 juin 2025** – La 16ᵉ édition de l’élection Miss Supranational se déroule aujourd’hui, vendredi 27 juin, au magnifique Amphithéâtre du parc Strzelecki, situé dans la région de Petite-Pologne, à Nowy Sącz . Diffusé en direct sur Polsat et sur la chaîne YouTube officielle, l’événement met en lumière 66 candidates venues des quatre coins du monde .\n\n### 🔹 Déroulement de la soirée\n\nAnimée par un quatuor international composé de Davina Reeves, Nico Panagio, Aleksander Sikora et Fezile Mkhize, la soirée promet d’être riche en émotions . Les performances musicales d’artistes locaux comme Natalia Nykiel et Grzegorz Hyży apporteront une touche culturelle à l’événement .\n\n### 🔹 Une nouveauté dans l’organisation\n\nPour la première fois, la République démocratique du Congo participe au concours . À l’inverse, plusieurs pays comme l’Italie, le Pakistan ou le Chili se sont retirés cette année .\n\n### 🔹 Parmi les favorites\n\nDes duels très attendus incluent notamment :\n\n* **Eduarda Braum**, Miss Supranational Brésil 2025, figure parmi les grandes prétendantes .\n* **Anna Lakrini** (1ʳᵉ dauphine potentielle) et **Quishantely Leito** (2ⁿᵈ dauphine potentielle) font également partie des têtes de liste .\n* Des candidates d’Asie, comme **Ayushree Malik** (Inde), en lice dans le Top 24, et **Firsta Yufi** (Indonésie), visent un podium .\n\n### 🔹 Un succès à suivre en direct\n\nSelon les informations officielles, la cérémonie finale commence à 20 h (heure de Pologne, CEST) . Les fans du monde entier peuvent suivre le vote « Misses Fan Vote » jusqu’à la même heure, ajoutant une dimension participative à la compétition .\n\n---\n\n### Pourquoi cet événement est historique 📌\n\n1. **Première étoile brésilienne ?**\n   Si Eduarda Braum l’emporte, ce serait la toute première victoire du Brésil à Miss Supranational .\n\n2. **Un large panorama culturel**\n   Avec 66 participantes et 25 fast‑track challenges, l’édition met à l’honneur la diversité globale. Certaines candidates ont d’ailleurs déjà accédé aux demi-finales par le vote des fans ou grâce aux épreuves préliminaires .\n\n3. **Une vitrine pour Malopolska**\n   Fortement impliquée, la région de Petite‑Pologne (Malopolska) souhaite profiter de cette exposition pour promouvoir son patrimoine touristique .\n\n---\n\n### À surveiller ce soir\n\n* Le nom de la nouvelle Miss Supranational, qui sera couronnée par Harashta Haifa Zahra, la détentrice du titre 2024 (Indonésie) .\n* Les gagnantes des titres secondaires et la réaction du public sur les réseaux.\n* La réception de l’éditeur brésilien **Eduarda Braum**, en cas de victoire."
+                },
+                {
+                    image: "https://cloudfront-us-east-2.images.arcpublishing.com/reuters/6ZUBVPQTF5KNPC2AJNO4RSQ6SY.jpg",
+                    date: "2025-06-27",
+                    title: "Canicule : l’Europe du Sud sous haute tension — alerte rouge en Italie, Espagne et Portugal",
+                    content: "Une vague de chaleur exceptionnelle déferle sur l’Europe méridionale, provoquant des records thermiques et des risques d’incendies inédits :\n\n---\n\n#### 1. 📈 Températures étouffantes\n\n* Des régions d’Italie, l’Espagne et du Portugal affrontent des températures supérieures à 40 °C — voire atteignant 42–44 °C dans certaines villes comme Lisbonne et l’intérieur de l’Andalousie .\n* Le Royaume-Uni et la France ne sont pas épargnés : Paris, Rome et Milan sont sous vigilance canicule et risque d’incendies .\n* Selon le Met Office, ce printemps a été marqué par des températures 5 à 10 °C au-dessus des normales saisonnières .\n\n#### 2. 🌍 Vagues d’alerte sanitaire et incendies\n\n* Alerte sanitaire en zone coeur de chaleur : les secours s’attendent à une hausse des cas d’insolation, surtout parmi les jeunes, les personnes âgées et vulnérables .\n* Incendies violents en Grèce : près d’Athènes, plusieurs dizaines de foyers, villages et stations balnéaires ont dû être évacués, appuyés par hélicoptères bombardiers d’eau .\n\n#### 3. 🔴 Vigilances renforcées\n\n* L’Espagne (Andalousie, Côte intérieure), le Portugal (Lisbonne, vallée du Douro, Algarve) et le sud de la France sont sous alertes orange à rouge, et 21 villes italiennes sont en alerte canicule élevée .\n\n---\n\n### Conseils pratiques\n\n| Recommandations            | Détails                                                                |\n| -------------------------- | ---------------------------------------------------------------------- |\n| Hydratation                | Boire régulièrement et éviter l’alcool.                                |\n| Fraîcheur                  | Éviter l'exposition entre 11h et 17h.                                  |\n| Vêtements et environnement | Porter chapeau, manches longues et privilégier les lieux climatisés.   |\n| Sécurité                   | Ne pas allumer de feux, respecter les interdictions en zones à risque. |\n\n---\n\n### 🌡️ Contexte et enjeu x\n\n* Ce phénomène s’inscrit dans une tendance à l’augmentation des épisodes extrêmes de chaleur en Europe, liée au changement climatique .\n* Il y a quelques jours, la Grèce a déjà connu son premier pic de chaleur majeur, avec nuit chaude et premiers départs de feu .\n\n---\n\n### Conclusion\n\nCette canicule intense et précoce illustre les défis croissants posés par le réchauffement : canicules de plus longue durée, records de température, et montée du risque d’incendies. Restons vigilants, organisons la solidarité envers les plus fragiles et"
+                }
+            ]
+        };
+
+        function parseMarkdown(text) {
+            return text
+                .replace(/^\|(.+?)\|\n^\|([ -:|]+)\|\n((?:^\|.*\|\n?)+)/gm, (_, headers, aligns, rows) => {
+                    const ths = headers.trim().split('|').map(h => `<th>${h.trim()}</th>`).join('');
+                    const trs = rows.trim().split('\n').map(row => {
+                        const tds = row.trim().slice(1, -1).split('|').map(cell => `<td>${cell.trim()}</td>`).join('');
+                        return `<tr>${tds}</tr>`;
+                    }).join('');
+                    return `<table><thead><tr>${ths}</tr></thead><tbody>${trs}</tbody></table>`;
+                })
+                .replace(/^---$/gm, '<hr>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/### (.*?)$/gm, '<h3>$1</h3>')
+                .replace(/## (.*?)$/gm, '<h2>$1</h2>')
+                .replace(/# (.*?)$/gm, '<h1>$1</h1>')
+                .replace(/^> (.*?)$/gm, '<blockquote>$1</blockquote>')
+                .replace(/^- (.*?)$/gm, '<li>$1</li>')
+                .replace(/^\* (.*?)$/gm, '<li>$1</li>')
+                .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
+                .replace(/\n\n/g, '</p><p>')
+                .replace(/^(.)/gm, '<p>$1')
+                .replace(/(.)$/gm, '$1</p>')
+                .replace(/<p><\/p>/g, '')
+                .replace(/<p>(<h[1-6]>)/g, '$1')
+                .replace(/(<\/h[1-6]>)<\/p>/g, '$1')
+                .replace(/<p>(<ul>)/g, '$1')
+                .replace(/(<\/ul>)<\/p>/g, '$1')
+                .replace(/<p>(<blockquote>)/g, '$1')
+                .replace(/(<\/blockquote>)<\/p>/g, '$1')
+                .replace(/^### (.*?)$/gm, '<h3>$1</h3>')
+                .replace(/^## (.*?)$/gm, '<h2>$1</h2>')
+                .replace(/^# (.*?)$/gm, '<h1>$1</h1>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/^> (.*?)$/gm, '<blockquote>$1</blockquote>')
+                .replace(/^---$/gm, '<hr>')
+                .replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
+                .replace(/^- (.*?)$/gm, '<li>$1</li>')
+                .replace(/(<li>.*<\/li>)/gms, '<ul>$1</ul>')
+                .replace(/\n{2,}/g, '</p><p>')
+                .replace(/^(?!<h|<ul>|<li>|<blockquote>|<hr>|<p>)(.+)$/gm, '<p>$1</p>')
+                .replace(/<p><\/p>/g, '')
+                .replace(/<p>(<(h[1-6]|ul|ol|blockquote|hr)>)/g, '$1')
+                .replace(/(<\/(h[1-6]|ul|ol|blockquote|hr)>)<\/p>/g, '$1');
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('fr-FR', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+        }
+
+        function truncateText(text, maxLength = 150) {
+            const cleanText = text.replace(/[#*>-]/g, '').replace(/\n/g, ' ').trim();
+            return cleanText.length > maxLength ? 
+                cleanText.substring(0, maxLength) + '...' : 
+                cleanText;
+        }
+
+        function switchTab(sectionName) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(sectionName).classList.add('active');
+            document.querySelector(`[data-section="${sectionName}"]`).classList.add('active');
+            
+            if (articlesData[sectionName].length === 0) {
+                loadArticles(sectionName);
+            }
+        }
+
+        function loadArticles(category) {
+            const loadingElement = document.getElementById(`loading-${category}`);
+            const articlesContainer = document.getElementById(`articles-${category}`);
+            
+            loadingElement.style.display = 'block';
+            articlesContainer.innerHTML = '';
+            
+            setTimeout(() => {
+                articlesData[category] = sampleArticles[category] || [];
+                
+                articlesData[category].sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                renderArticles(category);
+                loadingElement.style.display = 'none';
+            }, 1000);
+        }
+
+        function renderArticles(category) {
+            const container = document.getElementById(`articles-${category}`);
+            const articles = articlesData[category];
+            
+            if (articles.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>Aucun article disponible</h3>
+                        <p>Revenez plus tard pour découvrir les dernières actualités.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = articles.map(article => `
+                <article class="article-card" onclick="openModal(${JSON.stringify(article).replace(/"/g, '&quot;')})">
+                    <img src="${article.image}" alt="${article.title}" class="article-image" 
+                         onerror="this.src='https://via.placeholder.com/400x200/e9ecef/6c757d?text=Image+non+disponible'">
+                    <div class="article-content">
+                        <div class="article-date">${formatDate(article.date)}</div>
+                        <h3 class="article-title">${article.title}</h3>
+                        <p class="article-excerpt">${truncateText(article.content)}</p>
+                    </div>
+                </article>
+            `).join('');
+        }
+
+        function openModal(article) {
+            const modal = document.getElementById('articleModal');
+            const modalImage = document.getElementById('modalImage');
+            const modalDate = document.getElementById('modalDate');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalText = document.getElementById('modalText');
+            
+            modalImage.src = article.image;
+            modalImage.alt = article.title;
+            modalDate.textContent = formatDate(article.date);
+            modalTitle.textContent = article.title;
+            modalText.innerHTML = parseMarkdown(article.content);
+            
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('articleModal');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const section = this.getAttribute('data-section');
+                    switchTab(section);
+                });
+            });
+            
+            document.getElementById('articleModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+            
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeModal();
+                }
+            });
+            
+            loadArticles('france');
+        });
+
+        async function loadArticlesFromJSON(category) {
+            try {
+                return sampleArticles[category] || [];
+            } catch (error) {
+                console.error(`Erreur lors du chargement des articles ${category}:`, error);
+                return [];
+            }
+        }
+    </script>
+</body>
+</html>
